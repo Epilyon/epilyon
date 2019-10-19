@@ -1,5 +1,5 @@
-import 'package:epilyon/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:epilyon/auth.dart';
 
 class HomePage extends StatefulWidget
 {
@@ -25,9 +25,7 @@ class _HomePageState extends State<HomePage>
     @override
     Widget build(BuildContext context)
     {
-        if (_logged) {
-            print(getUser().email);
-        }
+        var user = getUser();
 
         return Scaffold(
             appBar: AppBar(
@@ -37,7 +35,7 @@ class _HomePageState extends State<HomePage>
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                        Text(_logged ? "Bienvenue " + getUser().name : "Chargement...")
+                        Text(_logged ? "Bienvenue " + user.name + " (" + user.region + " " + user.promo + ")" : "Chargement...")
                     ],
                 ),
             ),

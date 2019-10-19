@@ -13,7 +13,7 @@ class EpilyonApp extends StatelessWidget
             theme: ThemeData(
                 primarySwatch: Colors.cyan,
             ),
-            home: LoginPage(title: 'Se connecter'), // TODO: Handle login and refresh
+            home: LoginPage(title: 'Epilyon'), // TODO: Handle login and refresh
         );
     }
 }
