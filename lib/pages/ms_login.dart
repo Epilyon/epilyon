@@ -1,3 +1,4 @@
+import 'package:epilyon/widgets/loading_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -17,11 +18,11 @@ class MSLoginPage extends StatefulWidget
 
 class _MSLoginPageState extends State<MSLoginPage>
 {
+    BuildContext _dialogContext;
+
     Future _onWebViewCreated(WebViewController controller) async
     {
         // TODO: Logging
-        await createSession();
-
         controller.loadUrl(API_URL + "/auth/login", headers: {
             "Authorization": "Bearer " + getToken()
         });
@@ -29,10 +30,57 @@ class _MSLoginPageState extends State<MSLoginPage>
 
     void _onChannelMessage(BuildContext context, JavascriptMessage message)
     {
-        if (message.message == 'Close') {
+        if (message.message != 'Close') {
+            return;
+        }
+
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+                _dialogContext = context;
+
+                return LoadingDialog(
+                    title: Text("Chargement"),
+                    content: Text("Obtention de l'utilisateur..."),
+                );
+            }
+        ).whenComplete(() {
+            _dialogContext = null;
+        });
+
+        login().then((_) {
+            if (_dialogContext == null) {
+                // TODO: Cancel login or prevent return
+                return;
+            }
+
+            Navigator.pop(_dialogContext);
             Navigator.pop(context);
             Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(title: "Accueil")));
-        }
+        }).catchError((e) {
+            // TODO: Generify ?
+            if (_dialogContext == null) {
+                return;
+            }
+
+            Navigator.pop(_dialogContext);
+            showDialog(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                    title: Text("Erreur"),
+                    content: Text("Impossible de se connecter au serveur : " + e.toString()),
+                    actions: <Widget>[
+                        FlatButton(
+                            child: Text("OK :("),
+                            onPressed: () {
+                                Navigator.of(context).pop();
+                            },
+                        )
+                    ],
+                )
+            );
+        });
     }
 
     @override

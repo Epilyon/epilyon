@@ -1,6 +1,9 @@
+import 'package:flutter/material.dart';
+
+import 'package:epilyon/widgets/loading_dialog.dart';
+import 'package:epilyon/auth.dart';
 import 'package:epilyon/pages/ms_login.dart';
 import 'package:epilyon/widgets/microsoft_button.dart';
-import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget
 {
@@ -14,9 +17,54 @@ class LoginPage extends StatefulWidget
 
 class _LoginPageState extends State<LoginPage>
 {
+    BuildContext _dialogContext;
+    
     void _onConnectPress(BuildContext context)
     {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => MSLoginPage(title: "Connexion")));
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+                _dialogContext = context;
+
+                return LoadingDialog(
+                    title: Text("Chargement"),
+                    content: Text("Création de la session..."),
+                );
+            }
+        ).whenComplete(() {
+            _dialogContext = null;
+        });
+
+        createSession().then((_) {
+            if (_dialogContext == null) {
+                return;
+            }
+
+            Navigator.pop(_dialogContext);
+            Navigator.push(context, MaterialPageRoute(builder: (context) => MSLoginPage(title: "Connexion")));
+        }).catchError((e) {
+            if (_dialogContext == null) {
+                return;
+            }
+
+            Navigator.pop(_dialogContext);
+            showDialog(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                    title: Text("Erreur"),
+                    content: Text("Impossible de se connecter au serveur : " + e.toString()),
+                    actions: <Widget>[
+                        FlatButton(
+                            child: Text("OK :("),
+                            onPressed: () {
+                                Navigator.of(context).pop();
+                            },
+                        )
+                    ],
+                )
+            );
+        });
     }
 
     @override
@@ -30,6 +78,7 @@ class _LoginPageState extends State<LoginPage>
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
+                        Text("Bienvenue", style: TextStyle(fontSize: 36, fontWeight: FontWeight.w500),),
                         Padding(
                           padding: const EdgeInsets.all(25.0),
                           child: MicrosoftButton(

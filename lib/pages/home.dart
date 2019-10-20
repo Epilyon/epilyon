@@ -13,13 +13,10 @@ class HomePage extends StatefulWidget
 
 class _HomePageState extends State<HomePage>
 {
-    var _logged = false;
-
     @override
     void initState()
     {
         super.initState();
-        login().then((_) => setState(() => _logged = true));
     }
 
     @override
@@ -35,7 +32,7 @@ class _HomePageState extends State<HomePage>
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                        Text(_logged ? "Bienvenue " + user.name + " (" + user.region + " " + user.promo + ")" : "Chargement...")
+                        Text("Bienvenue " + user.name + " (" + user.region + " " + user.promo + ")")
                     ],
                 ),
             ),
