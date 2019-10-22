@@ -1,25 +1,23 @@
 import 'package:flutter/material.dart';
 
+import 'package:epilyon/pages/qcm/qcm_navbar.dart';
 import 'package:epilyon/widgets/layout/drawer.dart';
-import 'package:epilyon/auth.dart';
 
-class HomePage extends StatefulWidget
+class NextQCMPage extends StatefulWidget
 {
-    HomePage({ Key key, this.title }) : super(key: key);
+    NextQCMPage({ Key key, this.title }) : super(key: key);
 
     final String title;
 
     @override
-    _HomePageState createState() => _HomePageState();
+    _NextQCMPageState createState() => _NextQCMPageState();
 }
 
-class _HomePageState extends State<HomePage>
+class _NextQCMPageState extends State<NextQCMPage>
 {
     @override
     Widget build(BuildContext context)
     {
-        var user = getUser();
-
         return Scaffold(
             appBar: AppBar(
                 title: Text(widget.title),
@@ -28,11 +26,12 @@ class _HomePageState extends State<HomePage>
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                        Text("Bienvenue " + user.name + " (" + user.region + " " + user.promo + ")")
+                        Text("WIP")
                     ],
                 ),
             ),
             drawer: EpilyonDrawer(),
+            bottomNavigationBar: QCMNavbar(),
         );
     }
 }

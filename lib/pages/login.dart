@@ -1,3 +1,4 @@
+import 'package:epilyon/pages/home.dart';
 import 'package:flutter/material.dart';
 
 import 'package:epilyon/widgets/loading_dialog.dart';
@@ -18,7 +19,29 @@ class LoginPage extends StatefulWidget
 class _LoginPageState extends State<LoginPage>
 {
     BuildContext _dialogContext;
-    
+    bool _refreshing;
+
+    @override
+    void initState()
+    {
+        super.initState();
+
+        _refreshing = true;
+
+        refresh().then((success) {
+            if (success) {
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(title: "Accueil"))); // TODO: Generify?
+            } else {
+                print("Refresh failed");
+            }
+        }).catchError((e) {
+            print("Error while doing refresh");
+            print(e);
+
+            _refreshing = false;
+        });
+    }
+
     void _onConnectPress(BuildContext context)
     {
         showDialog(
@@ -79,7 +102,7 @@ class _LoginPageState extends State<LoginPage>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                         Text("Bienvenue", style: TextStyle(fontSize: 36, fontWeight: FontWeight.w500),),
-                        Padding(
+                        _refreshing ? Text("Chargement...", style: TextStyle(fontStyle: FontStyle.italic)) : Padding(
                           padding: const EdgeInsets.all(25.0),
                           child: MicrosoftButton(
                               text: "Se connecter avec Microsoft", // TODO: Lang

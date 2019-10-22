@@ -11,7 +11,7 @@ class EpilyonApp extends StatelessWidget
         return MaterialApp(
             title: 'Epilyon',
             theme: ThemeData(
-                primarySwatch: Colors.blue,
+                primaryColor: Colors.lightGreenAccent[700],
             ),
             home: LoginPage(title: 'Epilyon'), // TODO: Handle login and refresh
         );
