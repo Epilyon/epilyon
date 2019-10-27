@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:epilyon/pages/login.dart';
 
+// TODO: Move every http call in a separated file, manage async and errors properly
+
 void main() => runApp(EpilyonApp());
 
 class EpilyonApp extends StatelessWidget

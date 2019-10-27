@@ -1,37 +1,27 @@
 import 'package:flutter/material.dart';
 
-import 'package:epilyon/pages/qcm/qcm_navbar.dart';
-import 'package:epilyon/widgets/layout/drawer.dart';
-
-class NextQCMPage extends StatefulWidget
+class NextQCMTab extends StatefulWidget
 {
-    NextQCMPage({ Key key, this.title }) : super(key: key);
+    NextQCMTab({ Key key, this.title }) : super(key: key);
 
     final String title;
 
     @override
-    _NextQCMPageState createState() => _NextQCMPageState();
+    _NextQCMTabState createState() => _NextQCMTabState();
 }
 
-class _NextQCMPageState extends State<NextQCMPage>
+class _NextQCMTabState extends State<NextQCMTab>
 {
     @override
     Widget build(BuildContext context)
     {
-        return Scaffold(
-            appBar: AppBar(
-                title: Text(widget.title),
+        return Center(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                    Text("WIP")
+                ],
             ),
-            body: Center(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                        Text("WIP")
-                    ],
-                ),
-            ),
-            drawer: EpilyonDrawer(),
-            bottomNavigationBar: QCMNavbar(),
         );
     }
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -48,9 +49,6 @@ Future<void> createSession() async
 {
     var result = await http.post(API_URL + '/auth/start'); // TODO: Handle possible error (generic function?)
     _token = jsonDecode(result.body)["token"];
-
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString("token", _token);
 }
 
 Future<void> login() async
@@ -61,6 +59,26 @@ Future<void> login() async
 
     var content = jsonDecode(result.body);
     _user = User(content["id"], content["name"], content["email"], content["promo"], content["region"]); // TODO: ...
+
+    if (content["id"] != null) {
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setString("token", _token);
+    }
+}
+
+Future<bool> logout() async
+{
+    var result = await http.post(API_URL + "/auth/logout", headers: {
+        "Authorization": "Bearer " + getToken()
+    });
+
+    bool success = jsonDecode(result.body)["success"] == true;
+
+    if (success) {
+        _token = "";
+    }
+
+    return success;
 }
 
 String getToken()

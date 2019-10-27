@@ -1,4 +1,5 @@
 import 'package:epilyon/pages/home.dart';
+import 'package:epilyon/state.dart';
 import 'package:flutter/material.dart';
 
 import 'package:epilyon/widgets/loading_dialog.dart';
@@ -8,7 +9,8 @@ import 'package:epilyon/widgets/microsoft_button.dart';
 
 class LoginPage extends StatefulWidget
 {
-    LoginPage({ Key key, this.title }) : super(key: key);
+    // TODO: Instead of passing title in constructor, hard code it
+    LoginPage({ Key key, @required this.title }) : super(key: key);
 
     final String title;
 
@@ -30,15 +32,23 @@ class _LoginPageState extends State<LoginPage>
 
         refresh().then((success) {
             if (success) {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(title: "Accueil"))); // TODO: Generify?
+                fetchState().then((_) {
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(title: "Accueil"))); // TODO: Generify?
+                }); // TODO: Handle error
             } else {
                 print("Refresh failed");
+
+                setState(() {
+                    _refreshing = false;
+                });
             }
         }).catchError((e) {
             print("Error while doing refresh");
             print(e);
 
-            _refreshing = false;
+            setState(() {
+                _refreshing = false;
+            });
         });
     }
 

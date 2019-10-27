@@ -1,3 +1,4 @@
+import 'package:epilyon/state.dart';
 import 'package:epilyon/widgets/loading_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -42,14 +43,14 @@ class _MSLoginPageState extends State<MSLoginPage>
 
                 return LoadingDialog(
                     title: Text("Chargement"),
-                    content: Text("Obtention de l'utilisateur..."),
+                    content: Text("Récupération des informations..."),
                 );
             }
         ).whenComplete(() {
             _dialogContext = null;
         });
 
-        login().then((_) {
+        login().then((_) => fetchState()).then((_) {
             if (_dialogContext == null) {
                 // TODO: Cancel login or prevent return
                 return;
