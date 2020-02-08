@@ -19,7 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 import 'package:epilyon/auth.dart';
-import 'package:epilyon/base.dart';
+import 'package:epilyon/pages/main.dart';
 import 'package:epilyon/widgets/dialogs.dart';
 
 class LogoutPage extends StatefulWidget
@@ -61,7 +61,7 @@ class _LogoutPageState extends State<LogoutPage>
           Navigator.pop(_dialogContext);
         }
 
-        pushBase(context);
+        pushMain(context);
       });
     });
   }

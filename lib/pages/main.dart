@@ -15,6 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+import 'package:epilyon/pages/base.dart';
+import 'package:epilyon/pages/qcm/qcm_history.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -22,7 +24,7 @@ import 'package:epilyon/auth.dart';
 import 'package:epilyon/pages/about.dart';
 import 'package:epilyon/pages/login.dart';
 import 'package:epilyon/pages/logout.dart';
-import 'package:epilyon/pages/qcm/last_qcm.dart';
+import 'package:epilyon/pages/qcm/qcm_result.dart';
 
 class Page {
   String title;
@@ -52,22 +54,22 @@ enum PageDisplay {
 
 // TODO: Preload assets ? (Check performance on a release build)
 
-void pushBase(BuildContext context)
+void pushMain(BuildContext context)
 {
   Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => BasePage())
+      MaterialPageRoute(builder: (context) => MainPage())
   );
 }
 
-class BasePage extends StatefulWidget {
-  BasePage({ Key key }) : super(key: key);
+class MainPage extends StatefulWidget {
+  MainPage({ Key key }) : super(key: key);
 
   @override
-  _BasePageState createState() => _BasePageState();
+  _MainPageState createState() => _MainPageState();
 }
 
-class _BasePageState extends State<BasePage> {
+class _MainPageState extends State<MainPage> {
   final List<Page> pages = [
     Page(
         title: 'Q.C.M.s',
@@ -83,12 +85,13 @@ class _BasePageState extends State<BasePage> {
             title: 'Résultats du Q.C.M.',
             tabTitle: 'Résultats',
             icon: 'assets/icons/done_all.svg',
-            page: LastQCMPage()
+            page: QCMResultPage()
           ),
           Page(
             title: 'Historique des Q.C.M.s',
             icon: 'assets/icons/list.svg',
             tabTitle: 'Historique',
+            page: QCMHistoryPage()
           )
         ]
     ),
@@ -138,82 +141,41 @@ class _BasePageState extends State<BasePage> {
   @override
   Widget build(BuildContext context) {
     Color primary = Theme.of(context).primaryColor;
-    MediaQueryData media = MediaQuery.of(context);
-    double barHeight = 54.0;
 
     Widget content = selectedPage.tabs.length > 0
         ? selectedPage.tabs[selectedPage.tabIndex].page
         : selectedPage.page;
 
-    return Scaffold(
-      appBar: buildAppBar(context, barHeight),
-      drawer: buildDrawer(context),
-      bottomNavigationBar: selectedPage.tabs.length > 0 ? BottomNavigationBar(
-        currentIndex: selectedPage.tabIndex,
-        elevation: 20.0,
-        onTap: (tab) => setState(() {
-          if (selectedPage.tabs[tab].page != null) {
-            selectedPage.tabIndex = tab;
-          }
-        }),
-        items: selectedPage.tabs.map((page) {
-          bool selected = content == page.page;
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: BasePage(
+        title: selectedPage.tabs.length > 0
+            ? selectedPage.tabs[selectedPage.tabIndex].title
+            : selectedPage.title,
+        drawer: buildDrawer(context),
+        bottomNav: selectedPage.tabs.length > 0 ? BottomNavigationBar(
+          currentIndex: selectedPage.tabIndex,
+          elevation: 20.0,
+          onTap: (tab) => setState(() {
+            if (selectedPage.tabs[tab].page != null) {
+              selectedPage.tabIndex = tab;
+            }
+          }),
+          items: selectedPage.tabs.map((page) {
+            bool selected = content == page.page;
 
-          return BottomNavigationBarItem(
-              icon: SvgPicture.asset(
-                page.icon,
-                width: 24,
-                color: selected ? primary : Color(0xFF999999),
-              ), // TODO: Better way ?
-              title: Text(page.tabTitle != null ? page.tabTitle : page.title)
-          );
-        }).toList(),
-      ) : null,
-      body: SingleChildScrollView(
-          child: Container(
-            child: content,
-            height: media.size.height - media.padding.top - barHeight
-                - (selectedPage.tabs.length > 0 ? kBottomNavigationBarHeight : 0),
-          )
-      )
-    );
-  }
-
-  Widget buildAppBar(BuildContext context, double height)
-  {
-    return PreferredSize(
-      child: Container(
-        decoration: BoxDecoration(boxShadow: [
-          BoxShadow(
-            color: Color.fromRGBO(6, 6, 6, 0.35),
-            offset: Offset(0, 2.0),
-            blurRadius: 5.0,
-          )
-        ]),
-        child: AppBar(
-          elevation: 0.0,
-          title: Text(
-              selectedPage.tabs.length > 0
-                  ? selectedPage.tabs[selectedPage.tabIndex].title
-                  : selectedPage.title
-          ),
-          titleSpacing: 3.0,
-          leading: Builder(
-              builder: (BuildContext context) {
-                return IconButton(
-                  icon: SvgPicture.asset(
-                    'assets/icons/menu.svg',
-                    width: 26,
-                    height: 26,
-                  ),
-                  onPressed: () { Scaffold.of(context).openDrawer(); },
-                  tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-                );
-              }
-          ),
-        ),
+            return BottomNavigationBarItem(
+                icon: SvgPicture.asset(
+                  page.icon,
+                  width: 24,
+                  color: selected ? primary : Color(0xFF999999),
+                ), // TODO: Better way (color) ?
+                title: Text(page.tabTitle != null ? page.tabTitle : page.title)
+            );
+          }).toList(),
+        ) : null,
+        child: content,
       ),
-      preferredSize: Size.fromHeight(height),
     );
   }
 

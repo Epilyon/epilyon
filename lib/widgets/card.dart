@@ -21,9 +21,17 @@ class EpiCard extends StatelessWidget
 {
   final String title;
   final Widget child;
-  final bool fullSize;
 
-  EpiCard({ @required this.title, @required this.child, this.fullSize = true });
+  final bool fullSize;
+  final double bottomPadding;
+
+  EpiCard({
+    @required this.title,
+    @required this.child,
+
+    this.fullSize = true,
+    this.bottomPadding = 12.5
+  });
 
   @override
   Widget build(BuildContext context)
@@ -45,7 +53,7 @@ class EpiCard extends StatelessWidget
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(left: 13.5, top: 11.5, bottom: 12.5),
+            padding: EdgeInsets.only(left: 13.5, top: 11.5, bottom: bottomPadding),
             child: Text(this.title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),),
           ),
           child

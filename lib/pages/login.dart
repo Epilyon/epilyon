@@ -22,6 +22,7 @@ import 'package:epilyon/auth.dart';
 import 'package:epilyon/widgets/dialogs.dart';
 import 'package:epilyon/widgets/office_button.dart';
 import 'package:epilyon/pages/ms_login.dart';
+import 'package:epilyon/pages/base.dart';
 
 // TODO: Rework this with a modern look
 
@@ -54,7 +55,7 @@ class _LoginPageState extends State<LoginPage>
       Navigator.pop(_dialogContext);
       Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => MSLoginPage(title: "Connexion"))
+          MaterialPageRoute(builder: (context) => MSLoginPage())
       );
     }).catchError((e, trace) {
       if (_dialogContext == null) {
@@ -76,33 +77,38 @@ class _LoginPageState extends State<LoginPage>
   @override
   Widget build(BuildContext context)
   {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 15.0, bottom: 30.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Text("Bienvenue", style: TextStyle(fontSize: 50, fontWeight: FontWeight.w500),),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Text(
-                "Bienvenue sur Epilyon, une application déstinée aux étudiants de l’EPITA "
-                    "de Lyon visant à rendre leur quotidien un peu moins chiant et à les forcer "
-                    "à travailler un peu plus.\n\n"
-                    "Un compte Office 365 en @epita.fr est requis pour utiliser l’application "
-                    "(logique), je ne ferai pas de bétise avec, promis.",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18)
+    MediaQueryData media = MediaQuery.of(context);
+
+    return Container(
+      height: media.size.height - media.padding.top - barHeight - 24.0,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 15.0, bottom: 30.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Text("Bienvenue", style: TextStyle(fontSize: 50, fontWeight: FontWeight.w500),),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Text(
+                  "Bienvenue sur Epilyon, une application déstinée aux étudiants de l’EPITA "
+                      "de Lyon visant à rendre leur quotidien un peu moins chiant et à les forcer "
+                      "à travailler un peu plus.\n\n"
+                      "Un compte Office 365 en @epita.fr est requis pour utiliser l’application "
+                      "(logique), je ne ferai pas de bétise avec, promis.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18)
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 35.0),
-              child: OfficeButton(
-                onPressed: () => _onConnectPress(context),
-                text: "Se connecter via Office 365",
-              ),
-            )
-          ],
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 35.0),
+                child: OfficeButton(
+                  onPressed: () => _onConnectPress(context),
+                  text: "Se connecter via Office 365",
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

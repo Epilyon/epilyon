@@ -19,7 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 import 'package:epilyon/auth.dart';
-import 'package:epilyon/base.dart';
+import 'package:epilyon/pages/main.dart';
 import 'package:epilyon/data.dart';
 import 'package:epilyon/widgets/dialogs.dart';
 
@@ -42,7 +42,7 @@ class _RefreshPageState extends State<RefreshPage>
 
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       if (!(await canRefresh())) {
-        pushBase(context);
+        pushMain(context);
         return;
       }
 
@@ -64,7 +64,7 @@ class _RefreshPageState extends State<RefreshPage>
           Navigator.pop(_dialogContext);
         }
 
-        pushBase(context);
+        pushMain(context);
       });
     });
   }
@@ -72,6 +72,8 @@ class _RefreshPageState extends State<RefreshPage>
   @override
   Widget build(BuildContext context)
   {
-    return Container();
+    return Container(
+      color: Theme.of(context).primaryColor,
+    );
   }
 }

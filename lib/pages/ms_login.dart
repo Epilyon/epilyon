@@ -15,10 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+import 'package:epilyon/pages/base.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-import 'package:epilyon/base.dart';
+import 'package:epilyon/pages/main.dart';
 import 'package:epilyon/widgets/dialogs.dart';
 import 'package:epilyon/data.dart';
 import 'package:epilyon/auth.dart';
@@ -26,9 +27,7 @@ import 'package:epilyon/api_url.dart';
 
 class MSLoginPage extends StatefulWidget
 {
-    MSLoginPage({ Key key, this.title }) : super(key: key);
-
-    final String title;
+    MSLoginPage({ Key key }) : super(key: key);
 
     @override
     _MSLoginPageState createState() => _MSLoginPageState();
@@ -54,21 +53,32 @@ class _MSLoginPageState extends State<MSLoginPage>
         showLoadingDialog(
             context,
             title: 'Chargement',
-            content: 'Récupération des informations...',
+            content: 'Lecture des données...',
             onContextUpdate: (ctx) => _dialogContext = ctx
         );
 
-        login().then((_) => fetchData()).then((_) {
+        login().then((first) async {
+            if (first) {
+                Navigator.pop(_dialogContext);
+                showLoadingDialog(
+                    context,
+                    title: 'Première connexion',
+                    content: 'Récupération des informations...',
+                    onContextUpdate: (ctx) => _dialogContext = ctx
+                );
+
+                await forceRefresh();
+            }
+
+            await fetchData();
+        }).then((_) {
             if (_dialogContext == null) {
                 // TODO: Cancel login or prevent return
                 return;
             }
 
             Navigator.pop(_dialogContext);
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => BasePage())
-            );
+            pushMain(context);
         }).catchError((e, trace) async {
             if (_dialogContext == null) {
                 return;
@@ -93,11 +103,9 @@ class _MSLoginPageState extends State<MSLoginPage>
     @override
     Widget build(BuildContext context)
     {
-        return Scaffold(
-            appBar: AppBar(
-                title: Text(widget.title),
-            ),
-            body: WebView(
+        return BasePage(
+            title: 'Connexion',
+            child: WebView(
                 javascriptMode: JavascriptMode.unrestricted,
                 onWebViewCreated: _onWebViewCreated,
                 javascriptChannels: Set.from([JavascriptChannel(

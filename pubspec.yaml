@@ -23,7 +23,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/icons/arrow_back.svg
     - assets/icons/arrow_drop_down.svg
+    - assets/icons/arrow_forward.svg
     - assets/icons/brightness_3.svg
     - assets/icons/build.svg
     - assets/icons/check.svg

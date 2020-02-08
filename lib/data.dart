@@ -43,7 +43,7 @@ Future<void> fetchData() async {
   data = parseData(parseResponse(utf8.decode(result.bodyBytes))['data']);
 }
 
-// TODO: Refresh on start + refresh button
+// TODO: Refresh button
 Future<void> forceRefresh() async {
   var result = await http.post(API_URL + '/data/refresh', headers: {
     'Token': getToken()
@@ -64,7 +64,7 @@ UserData parseData(dynamic data)
             .reduce((a, b) => a + b)
     )).toList();
 
-    if (grades.length == 7) {
+    if (grades.length == 7 && grades[0].subject == 'Élec.') {
       grades.insert(6, grades.removeAt(0));
       grades.insert(6, grades.removeAt(0));
     }

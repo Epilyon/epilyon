@@ -74,13 +74,16 @@ Future<void> createSession() async
   _token = parseResponse(result.body)['token'];
 }
 
-Future<void> login() async
+Future<bool> login() async
 {
   var result = await http.post(API_URL + '/auth/end', headers: {
     'Token': getToken()
   });
 
-  await setUser(parseResponse(result.body)['user']);
+  var json = parseResponse(result.body);
+  await setUser(json['user']);
+
+  return json['first_time'];
 }
 
 Future<void> cancelLogin() async
