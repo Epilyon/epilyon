@@ -1,92 +1,135 @@
-import 'dart:convert';
-
+/*
+ * Epilyon, keeping EPITA students organized
+ * Copyright (C) 2019-2020 Adrien 'Litarvan' Navratil
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:epilyon/api_url.dart';
 import 'package:epilyon/api.dart';
 
-var _token = "";
+String _token = "";
 User _user;
 
 class User
 {
-    int id;
-    String name;
-    String email;
-    String promo;
-    String region;
+  String username;
+  String firstName;
+  String lastName;
+  String email;
+  String promo;
+  String avatar;
 
-    User(this.id, this.name, this.email, this.promo, this.region);
+  User(this.username, this.firstName, this.lastName, this.email, this.promo, this.avatar);
+}
+
+Future<bool> canRefresh() async
+{
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString('token') != null;
 }
 
 Future<bool> refresh() async
 {
-    final prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString("token");
-
-    if (token == null) {
-        return false;
-    }
-
-    var result = await http.post(API_URL + '/auth/refresh', headers: {
-        "Authorization": "Bearer " + token
-    });
-
-    var json = jsonDecode(result.body);
-    if (json["token"] != null) {
-        _token = json["token"];
-        prefs.setString("token", _token);
-
-        await login();
-
-        return true;
-    }
-
+  final prefs = await SharedPreferences.getInstance();
+  var token = prefs.getString('token');
+  if (token == null) {
     return false;
+  }
+
+  var result = await http.post(API_URL + '/auth/refresh', headers: {
+    'Token': token
+  });
+
+  var json;
+  try {
+    json = parseResponse(result.body);
+  } catch (e) {
+    prefs.remove('token');
+    throw e;
+  }
+
+  _token = json["token"];
+  await setUser(json["user"]);
+
+  return true;
 }
 
 Future<void> createSession() async
 {
-    var result = await http.post(API_URL + '/auth/start'); // TODO: Handle possible error (generic function?)
-    _token = jsonDecode(result.body)["token"];
+  var result = await http.post(API_URL + '/auth/start');
+  _token = parseResponse(result.body)['token'];
 }
 
 Future<void> login() async
 {
-    var result = await http.post(API_URL + "/auth/end", headers: { // TODO: Handle errors!
-        "Authorization": "Bearer " + getToken()
-    });
+  var result = await http.post(API_URL + '/auth/end', headers: {
+    'Token': getToken()
+  });
 
-    var content = jsonDecode(result.body);
-    _user = User(content["id"], content["name"], content["email"], content["promo"], content["region"]); // TODO: ...
-
-    if (content["id"] != null) {
-        final prefs = await SharedPreferences.getInstance();
-        prefs.setString("token", _token);
-    }
+  await setUser(parseResponse(result.body)['user']);
 }
 
-Future<bool> logout() async
+Future<void> cancelLogin() async
 {
-    var result = await http.post(API_URL + "/auth/logout", headers: {
-        "Authorization": "Bearer " + getToken()
-    });
+  _token = '';
+  _user = null;
 
-    bool success = jsonDecode(result.body)["success"] == true;
+  final prefs = await SharedPreferences.getInstance();
+  prefs.remove('token');
+}
 
-    if (success) {
-        _token = "";
-    }
+Future<void> setUser(dynamic user) async
+{
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setString('token', _token);
 
-    return success;
+  _user = User(
+      user['username'],
+      user['first_name'],
+      user['last_name'],
+      user['email'],
+      user['promo'],
+      user['avatar']
+  );
+
+  print("Logged in as '" + _user.firstName + " " + _user.lastName + "'");
+}
+
+Future<void> logout() async
+{
+  var result = await http.post(API_URL + '/auth/logout', headers: {
+    'Token': getToken()
+  });
+
+  parseResponse(result.body);
+
+  _token = '';
+  _user = null;
+
+  final prefs = await SharedPreferences.getInstance();
+  prefs.remove('token');
 }
 
 String getToken()
 {
-    return _token;
+  return _token;
 }
 
 User getUser()
 {
-    return _user;
+  return _user;
 }

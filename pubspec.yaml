@@ -1,6 +1,6 @@
 name: epilyon
 description: Keeping EPITA students organized
-version: 1.0.0+1
+version: 0.1.0+1
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -9,11 +9,48 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^0.1.2
-  webview_flutter: ^0.3.15+1
-  http: ^0.12.0+2
-  shared_preferences: ^0.5.4
+  flutter_svg: ^0.17.1
+  url_launcher: ^5.4.1
+  http: ^0.12.0+4
+  shared_preferences: ^0.5.6+1
+  webview_flutter: ^0.3.19+5
+  intl: ^0.16.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
 
 flutter:
   uses-material-design: true
   assets:
-    - assets/
+    - assets/icons/arrow_drop_down.svg
+    - assets/icons/brightness_3.svg
+    - assets/icons/build.svg
+    - assets/icons/check.svg
+    - assets/icons/check_box.svg
+    - assets/icons/done_all.svg
+    - assets/icons/edit.svg
+    - assets/icons/event_note.svg
+    - assets/icons/first_page.svg
+    - assets/icons/format_list_bulleted.svg
+    - assets/icons/info.svg
+    - assets/icons/landscape.svg
+    - assets/icons/last_page.svg
+    - assets/icons/list.svg
+    - assets/icons/menu.svg
+    - assets/icons/navigate_next.svg
+    - assets/icons/office.svg
+    - assets/icons/school.svg
+    - assets/icons/settings.svg
+    - assets/icons/wb_sunny.svg
+    - assets/icons/work.svg
+    - assets/images/default_user.png
+  fonts:
+    - family: Lato2
+      fonts:
+        - asset: assets/fonts/Lato_SemiBold.ttf
+          weight: 600
+    - family: Lato3
+      fonts:
+        - asset: assets/fonts/Lato_SemiBold_Italic.ttf
+          weight: 600

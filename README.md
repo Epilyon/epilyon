@@ -1,3 +1,3 @@
 # Epilyon
 
-Keeping EPITA students organized.
+Keeping EPITA students organized

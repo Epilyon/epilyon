@@ -1,11 +1,28 @@
-import 'package:epilyon/state.dart';
-import 'package:epilyon/widgets/loading_dialog.dart';
+/*
+ * Epilyon, keeping EPITA students organized
+ * Copyright (C) 2019-2020 Adrien 'Litarvan' Navratil
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import 'package:epilyon/base.dart';
+import 'package:epilyon/widgets/dialogs.dart';
+import 'package:epilyon/data.dart';
 import 'package:epilyon/auth.dart';
-import 'package:epilyon/pages/home.dart';
-import 'package:epilyon/api.dart';
+import 'package:epilyon/api_url.dart';
 
 class MSLoginPage extends StatefulWidget
 {
@@ -23,9 +40,8 @@ class _MSLoginPageState extends State<MSLoginPage>
 
     Future _onWebViewCreated(WebViewController controller) async
     {
-        // TODO: Logging
         controller.loadUrl(API_URL + "/auth/login", headers: {
-            "Authorization": "Bearer " + getToken()
+            "Token": getToken()
         });
     }
 
@@ -35,51 +51,41 @@ class _MSLoginPageState extends State<MSLoginPage>
             return;
         }
 
-        showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) {
-                _dialogContext = context;
+        showLoadingDialog(
+            context,
+            title: 'Chargement',
+            content: 'Récupération des informations...',
+            onContextUpdate: (ctx) => _dialogContext = ctx
+        );
 
-                return LoadingDialog(
-                    title: Text("Chargement"),
-                    content: Text("Récupération des informations..."),
-                );
-            }
-        ).whenComplete(() {
-            _dialogContext = null;
-        });
-
-        login().then((_) => fetchState()).then((_) {
+        login().then((_) => fetchData()).then((_) {
             if (_dialogContext == null) {
                 // TODO: Cancel login or prevent return
                 return;
             }
 
             Navigator.pop(_dialogContext);
-            Navigator.pop(context);
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(title: "Accueil")));
-        }).catchError((e) {
-            // TODO: Generify ?
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => BasePage())
+            );
+        }).catchError((e, trace) async {
             if (_dialogContext == null) {
                 return;
             }
 
+            await cancelLogin();
+
             Navigator.pop(_dialogContext);
-            showDialog(
-                context: context,
-                builder: (BuildContext context) => AlertDialog(
-                    title: Text("Erreur"),
-                    content: Text("Impossible de se connecter au serveur : " + e.toString()),
-                    actions: <Widget>[
-                        FlatButton(
-                            child: Text("OK :("),
-                            onPressed: () {
-                                Navigator.of(context).pop();
-                            },
-                        )
-                    ],
-                )
+            Navigator.pop(context);
+
+            print('Error during login/data fetching : ' + e.toString());
+            print(trace);
+
+            showErrorDialog(
+                context,
+                title: 'Erreur',
+                content: 'Impossible de se connecter au serveur : ' + e.toString()
             );
         });
     }
@@ -95,7 +101,8 @@ class _MSLoginPageState extends State<MSLoginPage>
                 javascriptMode: JavascriptMode.unrestricted,
                 onWebViewCreated: _onWebViewCreated,
                 javascriptChannels: Set.from([JavascriptChannel(
-                    name: "Epilyon", onMessageReceived: (message) => _onChannelMessage(context, message)
+                    name: "Epilyon",
+                    onMessageReceived: (message) => _onChannelMessage(context, message)
                 )]),
             ),
         );
