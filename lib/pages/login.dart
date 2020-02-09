@@ -17,14 +17,11 @@
  */
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:epilyon/auth.dart';
 import 'package:epilyon/widgets/dialogs.dart';
-import 'package:epilyon/widgets/office_button.dart';
 import 'package:epilyon/pages/ms_login.dart';
-import 'package:epilyon/pages/base.dart';
-
-// TODO: Rework this with a modern look
 
 class LoginPage extends StatefulWidget
 {
@@ -77,37 +74,93 @@ class _LoginPageState extends State<LoginPage>
   @override
   Widget build(BuildContext context)
   {
-    MediaQueryData media = MediaQuery.of(context);
-
-    return Container(
-      height: media.size.height - media.padding.top - barHeight - 24.0,
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 15.0, bottom: 30.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Text("Bienvenue", style: TextStyle(fontSize: 50, fontWeight: FontWeight.w500),),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Text(
-                  "Bienvenue sur Epilyon, une application déstinée aux étudiants de l’EPITA "
-                      "de Lyon visant à rendre leur quotidien un peu moins chiant et à les forcer "
-                      "à travailler un peu plus.\n\n"
-                      "Un compte Office 365 en @epita.fr est requis pour utiliser l’application "
-                      "(logique), je ne ferai pas de bétise avec, promis.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18)
+    return Scaffold(
+        body: WillPopScope(
+          onWillPop: () async => false,
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  fit: BoxFit.cover,
+                  alignment: Alignment.bottomCenter,
+                  image: AssetImage("assets/images/login_background.jpg")
+              )
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withAlpha(153)
+              ),
+              child: Center(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      height: MediaQuery.of(context).size.height - 70.0,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(top: 50.0, bottom: 15.0),
+                            child: SvgPicture.asset(
+                              'assets/icons/epilyon.svg',
+                              width: 75.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            'Epilyon',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 52,
+                                fontWeight: FontWeight.w500
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 20.0),
+                      child: buildOfficeButton(context),
+                    )
+                  ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 35.0),
-                child: OfficeButton(
-                  onPressed: () => _onConnectPress(context),
-                  text: "Se connecter via Office 365",
+            ),
+          ),
+        )
+    );
+  }
+
+  Widget buildOfficeButton(BuildContext context)
+  {
+    return Material(
+      elevation: 0.0,
+      color: Color(0xFF0070E8),
+      borderRadius: BorderRadius.circular(4.0),
+      child: InkWell(
+        onTap: () => _onConnectPress(context),
+        child: Ink(
+          height: 50.0,
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(right: 10.0),
+                  child: SvgPicture.asset(
+                      'assets/icons/office.svg',
+                      width: 21.0,
+                      height: 21.0
+                  ),
                 ),
-              )
-            ],
+                Text(
+                  'Se connecter via Office 365',
+                  // textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18.0),
+                ),
+              ],
+            ),
           ),
         ),
       ),

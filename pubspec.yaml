@@ -48,7 +48,7 @@ flutter:
     - assets/icons/settings.svg
     - assets/icons/wb_sunny.svg
     - assets/icons/work.svg
-    - assets/images/default_user.png
+    - assets/images/login_background.jpg
   fonts:
     - family: Lato2
       fonts:

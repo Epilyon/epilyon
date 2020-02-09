@@ -19,8 +19,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 import 'package:epilyon/auth.dart';
-import 'package:epilyon/pages/main.dart';
 import 'package:epilyon/data.dart';
+import 'package:epilyon/pages/main.dart';
+import 'package:epilyon/pages/login.dart';
 import 'package:epilyon/widgets/dialogs.dart';
 
 class RefreshPage extends StatefulWidget
@@ -42,7 +43,7 @@ class _RefreshPageState extends State<RefreshPage>
 
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       if (!(await canRefresh())) {
-        pushMain(context);
+        pushLogin();
         return;
       }
 
@@ -53,20 +54,31 @@ class _RefreshPageState extends State<RefreshPage>
           onContextUpdate: (ctx) => _dialogContext = ctx
       );
 
-      refresh().then((_) => fetchData()).catchError((e, trace) async {
-        print('Error while doing refresh/fetching data : ' + e.toString());
-        print('Considering not logged');
-        print(trace);
+      refresh()
+          .then((_) => fetchData())
+          .then((_) => pushMain(context))
+          .catchError((e, trace) async {
+            print('Error while doing refresh/fetching data : ' + e.toString());
+            print('Considering not logged');
+            print(trace);
 
-        await cancelLogin();
-      }).whenComplete(() {
-        if (_dialogContext == null) {
-          Navigator.pop(_dialogContext);
-        }
+            await cancelLogin();
 
-        pushMain(context);
-      });
+            pushLogin();
+          }).whenComplete(() {
+            if (_dialogContext == null) {
+              Navigator.pop(_dialogContext);
+            }
+          });
     });
+  }
+
+  void pushLogin()
+  {
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage())
+    );
   }
 
   @override

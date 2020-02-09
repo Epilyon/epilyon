@@ -67,22 +67,25 @@ class _QCMHistoryPageState extends State<QCMHistoryPage>
       padding: const EdgeInsets.symmetric(vertical: 9.0),
       child: EpiCard(
           title: "Semestre n°$num",
-          bottomPadding: 3.5,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 6.5),
-            child: Column(
-              children: qcms.map((qcm) => Column(
-                children: <Widget>[
-                  Divider(),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return BasePage(
-                            title: 'QCM du ' + format.format(qcm.date),
-                            child: QCMResultPage(qcm: qcm)
-                        );
-                      }));
-                    },
+          bottomPadding: 10.0,
+          child: Column(
+            children: qcms.map((qcm) => Column(
+              children: <Widget>[
+                Divider(
+                  height: 0,
+                ),
+                buildEntry(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return BasePage(
+                          title: 'QCM du ' + format.format(qcm.date),
+                          child: QCMResultPage(qcm: qcm)
+                      );
+                    }));
+                  },
+                  isLast: qcm == qcms[qcms.length - 1],
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: qcm == qcms[qcms.length - 1] ? 1.5 : 0.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
@@ -110,10 +113,32 @@ class _QCMHistoryPageState extends State<QCMHistoryPage>
                       ],
                     ),
                   ),
-                ],
-              )).toList(),
-            ),
+                ),
+              ],
+            )).toList(),
           )
+      ),
+    );
+  }
+
+  Widget buildEntry({ Widget child, Function() onTap, bool isLast })
+  {
+    var borderRadius = BorderRadius.only(
+        bottomLeft: Radius.circular(isLast ? 3.0 : 0.0),
+        bottomRight: Radius.circular(isLast ? 3.0 : 0.0)
+    );
+
+    return Material(
+      elevation: 0.0,
+      color: Colors.white,
+      borderRadius: borderRadius,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: borderRadius,
+        child: Ink(
+          height: isLast ? 41.5 : 40.0,
+          child: child,
+        ),
       ),
     );
   }

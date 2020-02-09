@@ -21,7 +21,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:epilyon/auth.dart';
 import 'package:epilyon/firebase.dart';
 import 'package:epilyon/pages/about.dart';
-import 'package:epilyon/pages/login.dart';
 import 'package:epilyon/pages/logout.dart';
 import 'package:epilyon/pages/qcm/qcm_result.dart';
 import 'package:epilyon/pages/base.dart';
@@ -35,7 +34,6 @@ class Page
   Widget page;
   List<Page> tabs;
   int tabIndex;
-  PageDisplay display;
 
   Page({
     @required this.title,
@@ -43,16 +41,8 @@ class Page
     @required this.icon,
     this.page,
     this.tabs = const [],
-    this.tabIndex = 0,
-    this.display = PageDisplay.WHEN_LOGGED_IN
+    this.tabIndex = 0
   });
-}
-
-enum PageDisplay
-{
-  WHEN_LOGGED_IN,
-  WHEN_LOGGED_OUT,
-  ALWAYS
 }
 
 // TODO: Preload assets ? (Check performance on a release build)
@@ -121,16 +111,9 @@ class _MainPageState extends State<MainPage>
         page: LogoutPage()
     ),
     Page(
-        title: 'Se connecter',
-        icon: 'assets/icons/last_page.svg',
-        page: LoginPage(),
-        display: PageDisplay.WHEN_LOGGED_OUT
-    ),
-    Page(
         title: 'À Propos',
         icon: 'assets/icons/info.svg',
-        page: AboutPage(),
-        display: PageDisplay.ALWAYS
+        page: AboutPage()
     ),
   ];
 
@@ -226,9 +209,7 @@ class _MainPageState extends State<MainPage>
                             decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 image: DecorationImage(
-                                    image: user != null
-                                        ? NetworkImage(user.avatar)
-                                        : AssetImage('assets/images/default_user.png'),
+                                    image: NetworkImage(user.avatar),
                                     fit: BoxFit.cover,
                                     alignment: Alignment.topCenter
                                 )
@@ -244,7 +225,7 @@ class _MainPageState extends State<MainPage>
                                 child: Row(
                                   children: <Widget>[
                                     Text(
-                                      user != null ? user.firstName : 'Utilisateur',
+                                      user.firstName,
                                       style: TextStyle(
                                           fontSize: 18.0,
                                           fontStyle: FontStyle.italic,
@@ -264,9 +245,7 @@ class _MainPageState extends State<MainPage>
                                             Padding(
                                               padding: const EdgeInsets.only(left: 5.0, right: 5.0, top: 3.0),
                                               child: Text(
-                                                  user == null ? '???' : (
-                                                      user.promo == '2024' ? 'SUP' : 'SPÉ' // TODO: Smart way
-                                                  ),
+                                                  user.promo == '2024' ? 'SUP' : 'SPÉ', // TODO: Smart way,
                                                   style: TextStyle(
                                                       height: 1,
                                                       fontFamily: 'Lato3',
@@ -284,7 +263,7 @@ class _MainPageState extends State<MainPage>
                                 ),
                               ),
                               Text(
-                                user != null ? user.lastName : 'Inconnu',
+                                user.lastName,
                                 style: TextStyle(
                                     fontSize: 18.0,
                                     fontFamily: 'Lato2',
@@ -300,7 +279,7 @@ class _MainPageState extends State<MainPage>
                     Padding(
                       padding: const EdgeInsets.only(top: 12.5, left: 2.5),
                       child: Text(
-                        'Lyon - ' + (user != null ? user.promo : '?'), // Temporary, groups will be there then
+                        'Lyon - ${user.promo}', // Temporary, groups will be there then
                         style: TextStyle(
                             color: Colors.black,
                             fontSize: 18,
@@ -331,17 +310,13 @@ class _MainPageState extends State<MainPage>
                     runSpacing: 10.0,
                     children: pages.map((page) {
                       bool selected = page == selectedPage;
-
-                      if (!(user == null && page.display == PageDisplay.WHEN_LOGGED_OUT ||
-                          user != null && page.display == PageDisplay.WHEN_LOGGED_IN ||
-                          page.display == PageDisplay.ALWAYS)) {
-                        return null;
-                      }
+                      BorderRadius borderRadius = BorderRadius.only(
+                          topLeft: Radius.circular(5),
+                          bottomLeft: Radius.circular(5)
+                      );
 
                       return Container(
                         decoration: BoxDecoration(
-                            color: selected ? Colors.white : null,
-                            borderRadius: BorderRadius.only(topLeft: Radius.circular(5), bottomLeft: Radius.circular(5)),
                             boxShadow: selected ? [
                               BoxShadow(
                                   offset: Offset(-1, 0),
@@ -350,27 +325,37 @@ class _MainPageState extends State<MainPage>
                               )
                             ] : []
                         ),
-                        child: ListTile(
-                          leading: SvgPicture.asset(page.icon, width: 24, color: selected ? primary : Colors.white),
-                          title: Padding(
-                            padding: const EdgeInsets.only(bottom: 1.0),
-                            child: Text(page.title, style: TextStyle(color: selected ? primary : Colors.white)),
-                          ),
-                          trailing: SvgPicture.asset(
-                              'assets/icons/navigate_next.svg',
-                              width: 30,
-                              color: selected ? primary : Colors.white
-                          ),
-                          contentPadding: EdgeInsets.only(left: 20.0, right: 10.0),
-                          onTap: () {
-                            if (page.page != null || page.tabs.length > 0) {
-                              setState(() {
-                                selectedPage = page;
-                              });
-                            }
+                        child: Material(
+                          color: selected ? Colors.white : null,
+                          borderRadius: borderRadius,
+                          child: InkWell(
+                            borderRadius: borderRadius,
+                            onTap: () {
+                             if (page.page != null || page.tabs.length > 0) {
+                                setState(() {
+                                  selectedPage = page;
+                                });
+                              }
 
-                            Navigator.pop(context);
-                          },
+                             Navigator.pop(context);
+                            },
+                            child: Ink(
+                              height: 55.0,
+                              child: ListTile(
+                                leading: SvgPicture.asset(page.icon, width: 24, color: selected ? primary : Colors.white),
+                                title: Padding(
+                                  padding: const EdgeInsets.only(bottom: 1.0),
+                                  child: Text(page.title, style: TextStyle(color: selected ? primary : Colors.white)),
+                                ),
+                                trailing: SvgPicture.asset(
+                                    'assets/icons/navigate_next.svg',
+                                    width: 30,
+                                    color: selected ? primary : Colors.white
+                                ),
+                                contentPadding: EdgeInsets.only(left: 20.0, right: 10.0),
+                              ),
+                            ),
+                          ),
                         ),
                       );
                     }).where((p) => p != null).toList()
