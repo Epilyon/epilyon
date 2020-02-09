@@ -15,8 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import 'package:epilyon/pages/base.dart';
-import 'package:epilyon/pages/qcm/qcm_result.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -24,6 +22,8 @@ import 'package:intl/intl.dart';
 
 import 'package:epilyon/widgets/card.dart';
 import 'package:epilyon/data.dart';
+import 'package:epilyon/pages/base.dart';
+import 'package:epilyon/pages/qcm/qcm_result.dart';
 
 class QCMHistoryPage extends StatefulWidget
 {

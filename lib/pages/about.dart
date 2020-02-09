@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:epilyon/main.dart';
@@ -39,9 +40,10 @@ class _AboutPageState extends State<AboutPage>
       child: Column(
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(top: 50.0),
-            child: Text('Epilyon', style: TextStyle(fontSize: 52, fontWeight: FontWeight.w500),),
+            padding: const EdgeInsets.only(top: 45.0, bottom: 10.0),
+            child: SvgPicture.asset('assets/icons/epilyon.svg', width: 50.0,),
           ),
+          Text('Epilyon', style: TextStyle(fontSize: 52, fontWeight: FontWeight.w500),),
           Text(VERSION, style: TextStyle(fontFamily: 'Lato2', fontSize: 22),),
           Padding(
             padding: const EdgeInsets.only(top: 10),
@@ -67,8 +69,7 @@ class _AboutPageState extends State<AboutPage>
                     "Matthieu (utybo)\n"
                     "Yann Michaux\n"
                     "Théo (Thelox), Thomas (Uxon)\n"
-                    "Shika\n"
-                    "Lamia, Marjolaine, et Patricia",
+                    "Shika",
                     style: TextStyle(
                       fontSize: 18,
                       fontStyle: FontStyle.italic,

@@ -33,6 +33,7 @@ flutter:
     - assets/icons/check_box.svg
     - assets/icons/done_all.svg
     - assets/icons/edit.svg
+    - assets/icons/epilyon.svg
     - assets/icons/event_note.svg
     - assets/icons/first_page.svg
     - assets/icons/format_list_bulleted.svg

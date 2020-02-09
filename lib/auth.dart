@@ -15,12 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import 'package:epilyon/firebase.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:epilyon/api_url.dart';
 import 'package:epilyon/api.dart';
+import 'package:epilyon/firebase.dart';
 
 String _token = "";
 User _user;
