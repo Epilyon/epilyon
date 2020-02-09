@@ -15,6 +15,7 @@ dependencies:
   shared_preferences: ^0.5.6+1
   webview_flutter: ^0.3.19+5
   intl: ^0.16.1
+  firebase_messaging: ^6.0.9
 
 dev_dependencies:
   flutter_test:

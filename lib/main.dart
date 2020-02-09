@@ -25,6 +25,7 @@ const VERSION = 'v0.1.0';
 void main()
 {
   initializeDateFormatting('fr_FR');
+
   runApp(MyApp());
 }
 

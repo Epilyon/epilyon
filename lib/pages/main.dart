@@ -15,18 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import 'package:epilyon/pages/base.dart';
-import 'package:epilyon/pages/qcm/qcm_history.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:epilyon/auth.dart';
+import 'package:epilyon/firebase.dart';
 import 'package:epilyon/pages/about.dart';
 import 'package:epilyon/pages/login.dart';
 import 'package:epilyon/pages/logout.dart';
 import 'package:epilyon/pages/qcm/qcm_result.dart';
+import 'package:epilyon/pages/base.dart';
+import 'package:epilyon/pages/qcm/qcm_history.dart';
 
-class Page {
+class Page
+{
   String title;
   String tabTitle;
   String icon;
@@ -46,7 +48,8 @@ class Page {
   });
 }
 
-enum PageDisplay {
+enum PageDisplay
+{
   WHEN_LOGGED_IN,
   WHEN_LOGGED_OUT,
   ALWAYS
@@ -62,14 +65,16 @@ void pushMain(BuildContext context)
   );
 }
 
-class MainPage extends StatefulWidget {
+class MainPage extends StatefulWidget
+{
   MainPage({ Key key }) : super(key: key);
 
   @override
   _MainPageState createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends State<MainPage>
+{
   final List<Page> pages = [
     Page(
         title: 'Q.C.M.s',
@@ -133,13 +138,17 @@ class _MainPageState extends State<MainPage> {
   Page selectedPage;
 
   @override
-  void initState() {
+  void initState()
+  {
     super.initState();
+
+    initFirebase();
     selectedPage = getUser() == null ? pages[5] : pages[0];
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)
+  {
     Color primary = Theme.of(context).primaryColor;
 
     Widget content = selectedPage.tabs.length > 0

@@ -45,4 +45,9 @@ dynamic parseResponse(String body)
 
 class UnreachableAPIException implements Exception
 {
+    @override
+    String toString()
+    {
+        return 'Serveur inaccessible';
+    }
 }

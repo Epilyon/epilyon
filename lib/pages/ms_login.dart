@@ -105,6 +105,7 @@ class _MSLoginPageState extends State<MSLoginPage>
     {
         return BasePage(
             title: 'Connexion',
+            fixed: true,
             child: WebView(
                 javascriptMode: JavascriptMode.unrestricted,
                 onWebViewCreated: _onWebViewCreated,

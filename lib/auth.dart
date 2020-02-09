@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+import 'package:epilyon/firebase.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -70,7 +71,11 @@ Future<bool> refresh() async
 
 Future<void> createSession() async
 {
-  var result = await http.post(API_URL + '/auth/start');
+  var deviceToken = await getDeviceToken();
+  var result = await http.post(API_URL + '/auth/start', headers: {
+    'Content-Type': 'application/json'
+  }, body: '{"device_token": "$deviceToken"}');
+
   _token = parseResponse(result.body)['token'];
 }
 

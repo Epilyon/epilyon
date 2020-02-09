@@ -25,9 +25,17 @@ class BasePage extends StatefulWidget
   final String title;
   final Widget drawer;
   final Widget bottomNav;
+  final bool fixed;
   final Widget child;
 
-  BasePage({ Key key, this.title, this.drawer, this.bottomNav, this.child }) : super(key: key);
+  BasePage({
+    Key key,
+    this.title,
+    this.drawer,
+    this.bottomNav,
+    this.fixed = false,
+    this.child
+  }) : super(key: key);
 
   @override
   _BasePageState createState() => _BasePageState();
@@ -42,7 +50,7 @@ class _BasePageState extends State<BasePage>
         appBar: buildAppBar(context, barHeight),
         drawer: widget.drawer,
         bottomNavigationBar: widget.bottomNav,
-        body: SingleChildScrollView(
+        body: widget.fixed ? widget.child : SingleChildScrollView(
             child: widget.child
         )
     );
