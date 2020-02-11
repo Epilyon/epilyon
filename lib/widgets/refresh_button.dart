@@ -72,6 +72,7 @@ class _RefreshButtonState extends State<RefreshButton> with SingleTickerProvider
         SnackBar(content: Text('Rafraîchissement des données...'))
     );
 
+    // TODO: Try no connection mode with a google/api ping
     forceRefresh().catchError((err) {
       showErrorDialog(
           context,

@@ -96,6 +96,7 @@ Future<bool> login() async
   var json = parseResponse(result.body);
   await setUser(json['user']);
 
+  _logged = true;
   return json['first_time'];
 }
 
