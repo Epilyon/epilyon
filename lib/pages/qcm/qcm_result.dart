@@ -122,14 +122,24 @@ class _QCMResultPageState extends State<QCMResultPage>
                               Row(
                                 children: <Widget>[
                                   previous == null ? Container() : Padding(
-                                    padding: EdgeInsets.only(right: grade.grade == 10.0 ? 4.0 : 12.75),
+                                    padding: EdgeInsets.only(
+                                        right: grade.grade == 10.0
+                                            ? 4.0
+                                            : (grade.grade < 0.0 ? 8.25 : 12.75)
+                                    ),
                                     child: compare(grade.grade, last.grade),
                                   ),
                                   Row(
                                     children: <Widget>[
                                       Text(
                                         grade.grade.toStringAsFixed(1),
-                                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
+                                        style: TextStyle(
+                                            color: grade.grade == 10.0
+                                                ? greenGrade
+                                                : (grade.grade < 0.0 ? redGrade : null),
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.w500
+                                        ),
                                       ),
                                       Text('/10', style: TextStyle(fontSize: 17))
                                     ],

@@ -15,13 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+import 'package:epilyon/widgets/dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:epilyon/auth.dart';
 import 'package:epilyon/firebase.dart';
 import 'package:epilyon/pages/about.dart';
-import 'package:epilyon/pages/logout.dart';
 import 'package:epilyon/pages/qcm/qcm_result.dart';
 import 'package:epilyon/pages/base.dart';
 import 'package:epilyon/pages/qcm/qcm_history.dart';
@@ -33,6 +33,7 @@ class Page
   String icon;
   Widget page;
   List<Page> tabs;
+  String action;
   int tabIndex;
 
   Page({
@@ -41,6 +42,7 @@ class Page
     @required this.icon,
     this.page,
     this.tabs = const [],
+    this.action,
     this.tabIndex = 0
   });
 }
@@ -108,7 +110,7 @@ class _MainPageState extends State<MainPage>
     Page(
         title: 'Se déconnecter',
         icon: 'assets/icons/first_page.svg',
-        page: LogoutPage()
+        action: 'logout'
     ),
     Page(
         title: 'À Propos',
@@ -119,6 +121,7 @@ class _MainPageState extends State<MainPage>
 
   // TODO: Page switching animation ?
   Page selectedPage;
+  BuildContext _dialogContext;
 
   @override
   void initState()
@@ -127,6 +130,44 @@ class _MainPageState extends State<MainPage>
 
     initFirebase();
     selectedPage = getUser() == null ? pages[5] : pages[0];
+  }
+
+  void showLogoutDialog(BuildContext context)
+  {
+    showConfirmDialog(context,
+        title: 'Se déconnecter',
+        content: 'Voulez-vous vraiment vous déconnecter ?',
+        okText: 'Oui',
+        cancelText: 'Non',
+        onConfirm: () => doLogout()
+    );
+  }
+
+  void doLogout()
+  {
+    showLoadingDialog(
+        context,
+        title: 'Déconnexion',
+        content: 'Déconnexion en cours...',
+        onContextUpdate: (ctx) => _dialogContext = ctx
+    );
+
+    logout().catchError((e, trace) {
+      print('Error while doing logout : ' + e.toString());
+      print(trace);
+
+      showErrorDialog(
+          context,
+          title: 'Erreur',
+          content: "Erreur lors de la déconnexion : " + e.toString()
+      );
+    }).whenComplete(() {
+      if (_dialogContext == null) {
+        Navigator.pop(_dialogContext);
+      }
+
+      pushMain(context);
+    });
   }
 
   @override
@@ -331,7 +372,12 @@ class _MainPageState extends State<MainPage>
                           child: InkWell(
                             borderRadius: borderRadius,
                             onTap: () {
-                             if (page.page != null || page.tabs.length > 0) {
+                              if (page.action != null) {
+                                if (page.action == 'logout') {
+                                  showLogoutDialog(context);
+                                }
+                              }
+                              else if (page.page != null || page.tabs.length > 0) {
                                 setState(() {
                                   selectedPage = page;
                                 });

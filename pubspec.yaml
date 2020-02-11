@@ -44,6 +44,7 @@ flutter:
     - assets/icons/menu.svg
     - assets/icons/navigate_next.svg
     - assets/icons/office.svg
+    - assets/icons/refresh.svg
     - assets/icons/school.svg
     - assets/icons/settings.svg
     - assets/icons/wb_sunny.svg

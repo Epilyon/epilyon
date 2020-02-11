@@ -58,6 +58,37 @@ void showErrorDialog(BuildContext context, { String title, String content })
   );
 }
 
+void showConfirmDialog(BuildContext context, {
+  String title,
+  String content,
+  Function() onConfirm,
+  String okText = 'Oui',
+  String cancelText = 'Annuler'
+}) {
+  showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text(title),
+        content: Text(content),
+        actions: <Widget>[
+          FlatButton(
+            child: Text(okText),
+            onPressed: () {
+              Navigator.of(context).pop();
+              onConfirm();
+            },
+          ),
+          FlatButton(
+            child: Text(cancelText),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          )
+        ],
+      )
+  );
+}
+
 class LoadingDialog extends SimpleDialog
 {
   LoadingDialog({

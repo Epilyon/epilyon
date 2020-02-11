@@ -15,6 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+import 'package:epilyon/data.dart';
+import 'package:epilyon/widgets/dialogs.dart';
+import 'package:epilyon/widgets/refresh_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -71,6 +74,9 @@ class _BasePageState extends State<BasePage>
           elevation: 0.0,
           title: Text(widget.title),
           titleSpacing: 3.0,
+          actions: widget.drawer == null ? null : <Widget>[
+            RefreshButton()
+          ],
           leading: Builder(
               builder: (BuildContext context) {
                 return IconButton(

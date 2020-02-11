@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'package:epilyon/pages/refresh.dart';
@@ -34,6 +35,11 @@ class MyApp extends StatelessWidget
   @override
   Widget build(BuildContext context)
   {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
     return MaterialApp(
       title: 'Epilyon',
       theme: ThemeData(
