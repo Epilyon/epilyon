@@ -37,6 +37,7 @@ class _LoginPageState extends State<LoginPage>
 
   void _onConnectPress(BuildContext context)
   {
+    // TODO: Find a way to generify
     showLoadingDialog(
         context,
         title: 'Chargement',

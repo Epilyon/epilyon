@@ -19,7 +19,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-import 'package:epilyon/pages/refresh.dart';
+import 'package:epilyon/data.dart';
+import 'package:epilyon/auth.dart';
+import 'package:epilyon/pages/login.dart';
+import 'package:epilyon/pages/main.dart';
 
 const VERSION = 'v0.1.0';
 
@@ -27,11 +30,18 @@ void main()
 {
   initializeDateFormatting('fr_FR');
 
-  runApp(MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  load().then((_) async {
+    runApp(MyApp(await canRefresh()));
+  });
 }
 
 class MyApp extends StatelessWidget
 {
+  final bool canRefresh;
+
+  MyApp(this.canRefresh);
+
   @override
   Widget build(BuildContext context)
   {
@@ -54,7 +64,7 @@ class MyApp extends StatelessWidget
           elevation: 0
         )
       ),
-      home: RefreshPage(),
+      home: canRefresh ? MainPage() : LoginPage(),
     );
   }
 }

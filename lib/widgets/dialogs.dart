@@ -72,16 +72,16 @@ void showConfirmDialog(BuildContext context, {
         content: Text(content),
         actions: <Widget>[
           FlatButton(
+            child: Text(cancelText),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          FlatButton(
             child: Text(okText),
             onPressed: () {
               Navigator.of(context).pop();
               onConfirm();
-            },
-          ),
-          FlatButton(
-            child: Text(cancelText),
-            onPressed: () {
-              Navigator.of(context).pop();
             },
           )
         ],

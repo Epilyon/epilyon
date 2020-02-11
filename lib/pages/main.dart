@@ -15,8 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import 'package:epilyon/widgets/dialogs.dart';
+import 'package:epilyon/pages/login.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:epilyon/auth.dart';
@@ -25,6 +26,8 @@ import 'package:epilyon/pages/about.dart';
 import 'package:epilyon/pages/qcm/qcm_result.dart';
 import 'package:epilyon/pages/base.dart';
 import 'package:epilyon/pages/qcm/qcm_history.dart';
+import 'package:epilyon/widgets/app_builder.dart';
+import 'package:epilyon/widgets/dialogs.dart';
 
 class Page
 {
@@ -46,8 +49,6 @@ class Page
     this.tabIndex = 0
   });
 }
-
-// TODO: Preload assets ? (Check performance on a release build)
 
 void pushMain(BuildContext context)
 {
@@ -132,7 +133,7 @@ class _MainPageState extends State<MainPage>
     selectedPage = getUser() == null ? pages[5] : pages[0];
   }
 
-  void showLogoutDialog(BuildContext context)
+  void showLogoutDialog()
   {
     showConfirmDialog(context,
         title: 'Se déconnecter',
@@ -162,11 +163,14 @@ class _MainPageState extends State<MainPage>
           content: "Erreur lors de la déconnexion : " + e.toString()
       );
     }).whenComplete(() {
-      if (_dialogContext == null) {
+      if (_dialogContext != null) {
         Navigator.pop(_dialogContext);
       }
 
-      pushMain(context);
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage())
+      );
     });
   }
 
@@ -179,36 +183,40 @@ class _MainPageState extends State<MainPage>
         ? selectedPage.tabs[selectedPage.tabIndex].page
         : selectedPage.page;
 
-    return WillPopScope(
-      onWillPop: () async => false,
-      child: BasePage(
-        title: selectedPage.tabs.length > 0
-            ? selectedPage.tabs[selectedPage.tabIndex].title
-            : selectedPage.title,
-        drawer: buildDrawer(context),
-        bottomNav: selectedPage.tabs.length > 0 ? BottomNavigationBar(
-          currentIndex: selectedPage.tabIndex,
-          elevation: 20.0,
-          onTap: (tab) => setState(() {
-            if (selectedPage.tabs[tab].page != null) {
-              selectedPage.tabIndex = tab;
-            }
-          }),
-          items: selectedPage.tabs.map((page) {
-            bool selected = content == page.page;
+    return AppBuilder(
+        builder: (context) {
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: BasePage(
+              title: selectedPage.tabs.length > 0
+                  ? selectedPage.tabs[selectedPage.tabIndex].title
+                  : selectedPage.title,
+              drawer: buildDrawer(context),
+              bottomNav: selectedPage.tabs.length > 0 ? BottomNavigationBar(
+                currentIndex: selectedPage.tabIndex,
+                elevation: 20.0,
+                onTap: (tab) => setState(() {
+                  if (selectedPage.tabs[tab].page != null) {
+                    selectedPage.tabIndex = tab;
+                  }
+                }),
+                items: selectedPage.tabs.map((page) {
+                  bool selected = content == page.page;
 
-            return BottomNavigationBarItem(
-                icon: SvgPicture.asset(
-                  page.icon,
-                  width: 24,
-                  color: selected ? primary : Color(0xFF999999),
-                ), // TODO: Better way (color) ?
-                title: Text(page.tabTitle != null ? page.tabTitle : page.title)
-            );
-          }).toList(),
-        ) : null,
-        child: content,
-      ),
+                  return BottomNavigationBarItem(
+                      icon: SvgPicture.asset(
+                        page.icon,
+                        width: 24,
+                        color: selected ? primary : Color(0xFF999999),
+                      ), // TODO: Better way (color) ?
+                      title: Text(page.tabTitle != null ? page.tabTitle : page.title)
+                  );
+                }).toList(),
+              ) : null,
+              child: content,
+            ),
+          );
+        },
     );
   }
 
@@ -374,16 +382,16 @@ class _MainPageState extends State<MainPage>
                             onTap: () {
                               if (page.action != null) {
                                 if (page.action == 'logout') {
-                                  showLogoutDialog(context);
+                                  showLogoutDialog();
                                 }
                               }
                               else if (page.page != null || page.tabs.length > 0) {
                                 setState(() {
                                   selectedPage = page;
                                 });
-                              }
 
-                             Navigator.pop(context);
+                                Navigator.pop(context);
+                              }
                             },
                             child: Ink(
                               height: 55.0,

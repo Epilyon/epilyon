@@ -18,6 +18,7 @@
 import 'dart:convert';
 
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:epilyon/api_url.dart';
@@ -31,9 +32,15 @@ class UserData
   UserData({ this.qcmHistory });
 }
 
-// TODO: Save data
-
 UserData data;
+
+Future<void> testConnection() async {
+  await http.get('http://google.com/');
+}
+
+Future<void> pingServer() async {
+  await http.get(API_URL + '/');
+}
 
 Future<void> fetchData() async {
   var result = await http.get(API_URL + '/data/get', headers: {
@@ -41,9 +48,9 @@ Future<void> fetchData() async {
   });
 
   data = parseData(parseResponse(utf8.decode(result.bodyBytes))['data']);
+  await save();
 }
 
-// TODO: Refresh button
 Future<void> forceRefresh() async {
   var result = await http.post(API_URL + '/data/refresh', headers: {
     'Token': getToken()
@@ -54,7 +61,7 @@ Future<void> forceRefresh() async {
 
 UserData parseData(dynamic data)
 {
-  DateFormat format = new DateFormat("yyyy-MM-dd");
+  DateFormat format = new DateFormat('yyyy-MM-dd');
   List<QCM> qcms = data['history'].map<QCM>((qcm) {
     List<QCMGrade> grades = qcm['grades'].map<QCMGrade>((grade) => QCMGrade(
         grade['subject'],
@@ -98,4 +105,44 @@ class QCMGrade
   double grade;
 
   QCMGrade(this.subject, this.grade);
+}
+
+Future<void> load() async
+{
+  await loadUser();
+
+  final prefs = await SharedPreferences.getInstance();
+  var qcms = <QCM>[];
+
+  if (prefs.containsKey('qcms')) {
+    for (var qcm in prefs.getStringList('qcms')) {
+      var json = jsonDecode(qcm);
+
+      qcms.add(QCM(
+          DateTime.fromMicrosecondsSinceEpoch(json['date']),
+          json['average'],
+          json['grades'].map<QCMGrade>((g) => QCMGrade(g['subject'], g['grade'])).toList()
+      ));
+    }
+  }
+
+  data = UserData(
+    qcmHistory: qcms
+  );
+}
+
+Future<void> save() async
+{
+  await saveUser();
+
+  final prefs = await SharedPreferences.getInstance();
+  
+  prefs.setStringList('qcms', data.qcmHistory.map((qcm) => jsonEncode({
+    'date': qcm.date.microsecondsSinceEpoch,
+    'average': qcm.average,
+    'grades': qcm.grades.map((grade) => {
+      'subject': grade.subject,
+      'grade': grade.grade
+    }).toList()
+  })).toList());
 }

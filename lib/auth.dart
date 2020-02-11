@@ -15,6 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,6 +26,9 @@ import 'package:epilyon/firebase.dart';
 
 String _token = "";
 User _user;
+bool _logged = false;
+
+// TODO: Merge user saving and token saving, move saving in data.dart, save avatar
 
 class User
 {
@@ -40,7 +45,7 @@ class User
 Future<bool> canRefresh() async
 {
   final prefs = await SharedPreferences.getInstance();
-  return prefs.getString('token') != null;
+  return !_logged && prefs.getString('token') != null && prefs.containsKey("user");
 }
 
 Future<bool> refresh() async
@@ -50,6 +55,8 @@ Future<bool> refresh() async
   if (token == null) {
     return false;
   }
+
+  print('Loading token : ' + token);
 
   var result = await http.post(API_URL + '/auth/refresh', headers: {
     'Token': token
@@ -66,6 +73,7 @@ Future<bool> refresh() async
   _token = json["token"];
   await setUser(json["user"]);
 
+  _logged = true;
   return true;
 }
 
@@ -95,6 +103,7 @@ Future<void> cancelLogin() async
 {
   _token = '';
   _user = null;
+  _logged = false;
 
   final prefs = await SharedPreferences.getInstance();
   prefs.remove('token');
@@ -104,6 +113,7 @@ Future<void> setUser(dynamic user) async
 {
   final prefs = await SharedPreferences.getInstance();
   prefs.setString('token', _token);
+  print('Saving token : ' + _token);
 
   _user = User(
       user['username'],
@@ -127,9 +137,39 @@ Future<void> logout() async
 
   _token = '';
   _user = null;
+  _logged = false;
 
   final prefs = await SharedPreferences.getInstance();
   prefs.remove('token');
+}
+
+Future<void> loadUser() async
+{
+  final prefs = await SharedPreferences.getInstance();
+  if (!prefs.containsKey('user')) {
+    return;
+  }
+
+  _token = prefs.getString("token");
+  setUser(jsonDecode(prefs.getString('user')));
+}
+
+Future<void> saveUser() async
+{
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setString("user", jsonEncode({
+    'username': _user.username,
+    'first_name': _user.firstName,
+    'last_name': _user.lastName,
+    'email': _user.email,
+    'promo': _user.promo,
+    'avatar': _user.avatar
+  }));
+}
+
+bool isLogged()
+{
+  return _logged;
 }
 
 String getToken()
