@@ -28,8 +28,6 @@ String _token = "";
 User _user;
 bool _logged = false;
 
-// TODO: Merge user saving and token saving, move saving in data.dart, save avatar
-
 class User
 {
   String username;

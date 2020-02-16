@@ -17,8 +17,6 @@
  */
 import 'dart:convert';
 
-// TODO: Handle down API and down CRI
-
 dynamic parseResponse(String body)
 {
     var json;

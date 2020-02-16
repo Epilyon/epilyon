@@ -136,7 +136,7 @@ class _QCMResultPageState extends State<QCMResultPage>
                                         style: TextStyle(
                                             color: grade.grade == 10.0
                                                 ? greenGrade
-                                                : (grade.grade < 0.0 ? redGrade : null),
+                                                : (grade.grade <= 0.0 ? redGrade : null),
                                             fontSize: 17,
                                             fontWeight: FontWeight.w500
                                         ),

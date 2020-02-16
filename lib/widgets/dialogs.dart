@@ -98,7 +98,6 @@ class LoadingDialog extends SimpleDialog
       title: title,
       children: <Widget>[
         Padding(
-          // TODO: TEXT WRAPPING!
           padding: const EdgeInsets.only(left: 32.5, right: 30, top: 12.5, bottom: 8.5),
           child: Row(
             children: <Widget>[

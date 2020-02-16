@@ -73,7 +73,6 @@ class _MSLoginPageState extends State<MSLoginPage>
       await fetchData();
     }).then((_) {
       if (_dialogContext == null) {
-        // TODO: Cancel login or prevent return
         return;
       }
 

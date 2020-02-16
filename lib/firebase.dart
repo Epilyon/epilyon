@@ -30,7 +30,7 @@ void initFirebase()
   );
 }
 
-Future<dynamic> handleBackgroundMessage(Map<String, dynamic> message) {
+Future<dynamic> handleBackgroundMessage(Map<String, dynamic> message) async {
   if (message.containsKey('data')) {
     // Handle data message
     final dynamic data = message['data'];
@@ -46,6 +46,7 @@ Future<dynamic> handleBackgroundMessage(Map<String, dynamic> message) {
   }
 
   // Or do other work.
+  return "";
 }
 
 Future<String> getDeviceToken() async {

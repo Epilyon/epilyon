@@ -47,7 +47,7 @@ class _EpiContentState extends State<EpiContent>
 
     canRefresh().then((canRefresh) {
       if (widget.doRefresh && canRefresh) {
-      SchedulerBinding.instance.addPostFrameCallback((_) => doRefresh());
+        SchedulerBinding.instance.addPostFrameCallback((_) => doRefresh());
       }
     });
   }

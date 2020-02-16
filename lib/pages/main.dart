@@ -15,10 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import 'package:epilyon/pages/login.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:epilyon/auth.dart';
 import 'package:epilyon/firebase.dart';
@@ -26,6 +25,7 @@ import 'package:epilyon/pages/about.dart';
 import 'package:epilyon/pages/qcm/qcm_result.dart';
 import 'package:epilyon/pages/base.dart';
 import 'package:epilyon/pages/qcm/qcm_history.dart';
+import 'package:epilyon/pages/login.dart';
 import 'package:epilyon/widgets/app_builder.dart';
 import 'package:epilyon/widgets/dialogs.dart';
 
@@ -258,7 +258,7 @@ class _MainPageState extends State<MainPage>
                             decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 image: DecorationImage(
-                                    image: NetworkImage(user.avatar),
+                                    image: CachedNetworkImageProvider(user.avatar),
                                     fit: BoxFit.cover,
                                     alignment: Alignment.topCenter
                                 )
