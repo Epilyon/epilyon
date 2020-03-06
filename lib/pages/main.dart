@@ -21,34 +21,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:epilyon/auth.dart';
 import 'package:epilyon/firebase.dart';
-import 'package:epilyon/pages/about.dart';
-import 'package:epilyon/pages/qcm/qcm_result.dart';
+import 'package:epilyon/pages.dart';
 import 'package:epilyon/pages/base.dart';
-import 'package:epilyon/pages/qcm/qcm_history.dart';
 import 'package:epilyon/pages/login.dart';
-import 'package:epilyon/widgets/app_builder.dart';
 import 'package:epilyon/widgets/dialogs.dart';
-
-class Page
-{
-  String title;
-  String tabTitle;
-  String icon;
-  Widget page;
-  List<Page> tabs;
-  String action;
-  int tabIndex;
-
-  Page({
-    @required this.title,
-    this.tabTitle,
-    @required this.icon,
-    this.page,
-    this.tabs = const [],
-    this.action,
-    this.tabIndex = 0
-  });
-}
 
 void pushMain(BuildContext context)
 {
@@ -68,58 +44,6 @@ class MainPage extends StatefulWidget
 
 class _MainPageState extends State<MainPage>
 {
-  final List<Page> pages = [
-    Page(
-        title: 'Q.C.M.s',
-        icon: 'assets/icons/check_box.svg',
-        tabIndex: 1, // TODO: Change this depending on the day/time
-        tabs: [
-          Page(
-            title: 'Prochain Q.C.M.',
-            tabTitle: 'Prochain',
-            icon: 'assets/icons/edit.svg',
-          ),
-          Page(
-            title: 'Résultats du Q.C.M.',
-            tabTitle: 'Résultats',
-            icon: 'assets/icons/done_all.svg',
-            page: QCMResultPage()
-          ),
-          Page(
-            title: 'Historique des Q.C.M.s',
-            icon: 'assets/icons/list.svg',
-            tabTitle: 'Historique',
-            page: QCMHistoryPage()
-          )
-        ]
-    ),
-    Page(
-        title: 'MiMos',
-        icon: 'assets/icons/work.svg',
-        //page:
-    ),
-    Page(
-        title: 'Gérer',
-        icon: 'assets/icons/build.svg',
-        //page:
-    ),
-    Page(
-        title: 'Paramètres',
-        icon: 'assets/icons/settings.svg',
-        //page:
-    ),
-    Page(
-        title: 'Se déconnecter',
-        icon: 'assets/icons/first_page.svg',
-        action: 'logout'
-    ),
-    Page(
-        title: 'À Propos',
-        icon: 'assets/icons/info.svg',
-        page: AboutPage()
-    ),
-  ];
-
   // TODO: Page switching animation ?
   Page selectedPage;
   BuildContext _dialogContext;
@@ -183,41 +107,58 @@ class _MainPageState extends State<MainPage>
         ? selectedPage.tabs[selectedPage.tabIndex].page
         : selectedPage.page;
 
-    return AppBuilder(
-        builder: (context) {
-          return WillPopScope(
-            onWillPop: () async => false,
-            child: BasePage(
-              title: selectedPage.tabs.length > 0
-                  ? selectedPage.tabs[selectedPage.tabIndex].title
-                  : selectedPage.title,
-              drawer: buildDrawer(context),
-              bottomNav: selectedPage.tabs.length > 0 ? BottomNavigationBar(
-                currentIndex: selectedPage.tabIndex,
-                elevation: 20.0,
-                onTap: (tab) => setState(() {
-                  if (selectedPage.tabs[tab].page != null) {
-                    selectedPage.tabIndex = tab;
-                  }
-                }),
-                items: selectedPage.tabs.map((page) {
-                  bool selected = content == page.page;
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: BasePage(
+        title: selectedPage.tabs.length > 0
+            ? selectedPage.tabs[selectedPage.tabIndex].title
+            : selectedPage.title,
+        drawer: buildDrawer(context),
+        bottomNav: selectedPage.tabs.length > 0 ? BottomNavigationBar(
+          currentIndex: selectedPage.tabIndex,
+          elevation: 20.0,
+          onTap: (tab) => setState(() {
+            if (selectedPage.tabs[tab].page != null) {
+              selectedPage.tabIndex = tab;
+            }
+          }),
+          items: selectedPage.tabs.map((page) {
+            bool selected = content == page.page;
 
-                  return BottomNavigationBarItem(
-                      icon: SvgPicture.asset(
-                        page.icon,
-                        width: 24,
-                        color: selected ? primary : Color(0xFF999999),
-                      ), // TODO: Better way (color) ?
-                      title: Text(page.tabTitle != null ? page.tabTitle : page.title)
-                  );
-                }).toList(),
-              ) : null,
-              child: content,
-            ),
-          );
-        },
+            return BottomNavigationBarItem(
+                icon: SvgPicture.asset(
+                  page.icon,
+                  width: 24,
+                  color: selected ? primary : Color(0xFF999999),
+                ), // TODO: Better way (color) ?
+                title: Text(page.tabTitle != null ? page.tabTitle : page.title)
+            );
+          }).toList(),
+        ) : null,
+        child: content,
+      ),
     );
+  }
+
+  void rebuild()
+  {
+    ElementVisitor visitor;
+    visitor = (child) {
+      if (child.widget is MainPage) {
+        child.markNeedsBuild();
+      } else {
+        for (var page in pages) {
+          if (page.page == child.widget) {
+            child.markNeedsBuild();
+          }
+        }
+      }
+
+      child.visitChildElements(visitor);
+    };
+
+    setState(() {});
+    context.visitChildElements(visitor);
   }
 
   Widget buildDrawer(BuildContext context)
@@ -357,7 +298,7 @@ class _MainPageState extends State<MainPage>
                 padding: const EdgeInsets.only(left: 15.0, top: 20.0),
                 child: Wrap(
                     runSpacing: 10.0,
-                    children: pages.map((page) {
+                    children: pages.where((page) => page.onlyIf == null || page.onlyIf(user)).map((page) {
                       bool selected = page == selectedPage;
                       BorderRadius borderRadius = BorderRadius.only(
                           topLeft: Radius.circular(5),
@@ -421,4 +362,9 @@ class _MainPageState extends State<MainPage>
       ),
     );
   }
+}
+
+void rebuildAll(BuildContext context)
+{
+  context.findAncestorStateOfType<_MainPageState>().rebuild();
 }

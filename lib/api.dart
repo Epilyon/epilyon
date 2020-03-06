@@ -19,33 +19,33 @@ import 'dart:convert';
 
 dynamic parseResponse(String body)
 {
-    var json;
+  var json;
 
-    try {
-        json = jsonDecode(body);
+  try {
+    json = jsonDecode(body);
 
-        if (json['success'] == null) {
-            throw 'No success field';
-        }
-    } catch (e, trace) {
-        print('JSON decoding error : ' + e.toString());
-        print(trace);
-
-        throw UnreachableAPIException();
+    if (json['success'] == null) {
+      throw 'No success field';
     }
+  } catch (e, trace) {
+    print('JSON decoding error : ' + e.toString());
+    print(trace);
 
-    if (json['success'] != true) {
-        throw json['error'];
-    }
+    throw UnreachableAPIException();
+  }
 
-    return json;
+  if (json['success'] != true) {
+    throw json['error'];
+  }
+
+  return json;
 }
 
 class UnreachableAPIException implements Exception
 {
-    @override
-    String toString()
-    {
-        return 'Serveur inaccessible';
-    }
+  @override
+  String toString()
+  {
+    return 'Serveur inaccessible';
+  }
 }

@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void showLoadingDialog(BuildContext context, {
   String title,
@@ -61,7 +62,7 @@ void showErrorDialog(BuildContext context, { String title, String content })
 void showConfirmDialog(BuildContext context, {
   String title,
   String content,
-  Function() onConfirm,
+  void Function() onConfirm,
   String okText = 'Oui',
   String cancelText = 'Annuler'
 }) {
@@ -89,6 +90,56 @@ void showConfirmDialog(BuildContext context, {
   );
 }
 
+void showInputDialog(BuildContext context, {
+  String title,
+  String content,
+  void Function(BuildContext, String) onConfirm,
+  String okText,
+  String cancelText = 'Annuler',
+  bool email = false
+}) {
+  final controller = TextEditingController(text: email ? '@epita.fr' : '');
+  controller.selection = new TextSelection(baseOffset: 0, extentOffset: 0);
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) => AlertDialog(
+      title: Text(title),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Text(content),
+          TextField(
+            keyboardType: email ? TextInputType.emailAddress : TextInputType.text,
+            autofocus: true,
+            controller: controller,
+            autocorrect: !email,
+            enableSuggestions: !email,
+            inputFormatters: email ? [
+              TextInputFormatter.withFunction(emailFormatter)
+            ] : [],
+          )
+        ],
+      ),
+      actions: <Widget>[
+        FlatButton(
+          child: Text(cancelText),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        FlatButton(
+          child: Text(okText),
+          onPressed: () {
+            onConfirm(context, controller.text);
+          },
+        )
+      ],
+    )
+  );
+}
+
 class LoadingDialog extends SimpleDialog
 {
   LoadingDialog({
@@ -112,5 +163,45 @@ class LoadingDialog extends SimpleDialog
           ),
         )
       ]
+  );
+}
+
+TextEditingValue emailFormatter(TextEditingValue oldValue, TextEditingValue newValue)
+{
+  var newVal = newValue.text;
+  var lenWithoutSuffix = newVal.length - '@epita.fr'.length;
+
+  if (newVal.endsWith('@epita.fr@epita.fr')) {
+    newVal = newVal.substring(0, lenWithoutSuffix);
+    lenWithoutSuffix -= '@epita.fr'.length;
+  }
+
+  var hasSuffix = newVal.endsWith('@epita.fr');
+  var hasOtherAt = newVal.substring(0, lenWithoutSuffix).contains('@');
+  var isNewValid = hasSuffix && !hasOtherAt;
+
+  var sel = newValue.selection;
+  if (sel.baseOffset > lenWithoutSuffix) {
+    sel = new TextSelection(
+        baseOffset: lenWithoutSuffix - (isNewValid ? 0 : 1),
+        extentOffset: sel.extentOffset
+            - (sel.baseOffset - lenWithoutSuffix)
+            - (isNewValid ? 0 : 1),
+        affinity: sel.affinity
+    );
+  }
+
+  if (isNewValid) {
+    return new TextEditingValue(
+        text: newVal,
+        composing: newValue.composing,
+        selection: sel
+    );
+  }
+
+  return new TextEditingValue(
+      text: oldValue.text,
+      composing: oldValue.composing,
+      selection: sel
   );
 }

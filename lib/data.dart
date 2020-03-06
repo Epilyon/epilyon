@@ -17,6 +17,7 @@
  */
 import 'dart:convert';
 
+import 'package:epilyon/delegates.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -28,8 +29,9 @@ import 'package:epilyon/auth.dart';
 class UserData
 {
   List<QCM> qcmHistory;
+  List<Delegate> delegates;
 
-  UserData({ this.qcmHistory });
+  UserData({ this.qcmHistory, this.delegates });
 }
 
 UserData data;
@@ -62,7 +64,7 @@ Future<void> forceRefresh() async {
 UserData parseData(dynamic data)
 {
   DateFormat format = new DateFormat('yyyy-MM-dd');
-  List<QCM> qcms = data['history'].map<QCM>((qcm) {
+  List<QCM> qcms = data['qcm_history'].map<QCM>((qcm) {
     List<QCMGrade> grades = qcm['grades'].map<QCMGrade>((grade) => QCMGrade(
         grade['subject'],
         grade['points']
@@ -85,8 +87,13 @@ UserData parseData(dynamic data)
 
   qcms.sort((a, b) => -a.date.compareTo(b.date));
 
+  List<Delegate> delegates = data['delegates'].map<Delegate>((delegate) {
+    return Delegate(delegate['name'], delegate['email']);
+  }).toList();
+
   return UserData(
-      qcmHistory: qcms
+      qcmHistory: qcms,
+      delegates: delegates
   );
 }
 
@@ -113,6 +120,7 @@ Future<void> load() async
 
   final prefs = await SharedPreferences.getInstance();
   var qcms = <QCM>[];
+  var delegates = <Delegate>[];
 
   if (prefs.containsKey('qcms')) {
     for (var qcm in prefs.getStringList('qcms')) {
@@ -126,8 +134,16 @@ Future<void> load() async
     }
   }
 
+  if (prefs.containsKey('delegates')) {
+    for (var delegate in prefs.getStringList('delegates')) {
+      var json = jsonDecode(delegate);
+      delegates.add(Delegate(json['name'], json['email']));
+    }
+  }
+
   data = UserData(
-    qcmHistory: qcms
+    qcmHistory: qcms,
+    delegates: delegates
   );
 }
 
@@ -144,5 +160,10 @@ Future<void> save() async
       'subject': grade.subject,
       'grade': grade.grade
     }).toList()
+  })).toList());
+
+  prefs.setStringList('delegates', data.delegates.map((delegate) => jsonEncode({
+    'name': delegate.name,
+    'email': delegate.email
   })).toList());
 }

@@ -17,11 +17,11 @@
  */
 import 'dart:math';
 
-import 'package:epilyon/widgets/app_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:epilyon/data.dart';
+import 'package:epilyon/pages/main.dart';
 import 'package:epilyon/widgets/dialogs.dart';
 
 // Thanks to David Anaya (https://www.davidanaya.io/) for this one
@@ -79,7 +79,7 @@ class _RefreshButtonState extends State<RefreshButton> with SingleTickerProvider
           content: 'Erreur lors du rafraîchissement : ' + err.toString()
       );
     }).then((_) => fetchData()).then((_) {
-      AppBuilder.of(context).rebuild();
+      rebuildAll(context);
     }).whenComplete(() {
       snack.close();
 

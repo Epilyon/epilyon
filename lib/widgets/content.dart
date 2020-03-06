@@ -15,12 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import 'package:epilyon/widgets/app_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 import 'package:epilyon/auth.dart';
 import 'package:epilyon/data.dart';
+import 'package:epilyon/pages/main.dart';
 import 'package:epilyon/pages/ms_login.dart';
 import 'package:epilyon/widgets/dialogs.dart';
 
@@ -33,10 +33,10 @@ class EpiContent extends StatefulWidget
   EpiContent({ this.child, this.fixed, this.doRefresh = false });
 
   @override
-  _EpiContentState createState() => _EpiContentState();
+  EpiContentState createState() => EpiContentState();
 }
 
-class _EpiContentState extends State<EpiContent>
+class EpiContentState extends State<EpiContent>
 {
   BuildContext _dialogContext;
 
@@ -92,7 +92,7 @@ class _EpiContentState extends State<EpiContent>
         .then((_) => fetchData())
         .then((_) {
           snack.close();
-          AppBuilder.of(context).rebuild();
+          rebuildAll(context);
         }).catchError((e, trace) async {
           print('Error while doing refresh/fetching data : ' + e.toString());
           print('Considering not logged');
