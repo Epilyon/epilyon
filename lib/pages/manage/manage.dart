@@ -19,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:epilyon/auth.dart';
+import 'package:epilyon/data.dart';
 import 'package:epilyon/delegates.dart';
 import 'package:epilyon/widgets/button.dart';
 import 'package:epilyon/widgets/card.dart';
@@ -34,6 +35,8 @@ class ManagePage extends StatefulWidget
 
 class _ManagePageState extends State<ManagePage>
 {
+  var notificationController = TextEditingController();
+
   void addDelegateDialog()
   {
     showInputDialog(context,
@@ -55,6 +58,17 @@ class _ManagePageState extends State<ManagePage>
     );
   }
 
+  void notifyAllDialog()
+  {
+    showConfirmDialog(context,
+      title: 'Notifier tout le monde ?',
+      content: "Voulez vous envoyer à TOUTE LA PROMO une notification avec comme "
+          "contenu '${notificationController.text}' ?",
+      onConfirm: doNotifyAll,
+      okText: 'Envoyer'
+    );
+  }
+
   void doAddDelegate(BuildContext context, String email)
   {
     addDelegate(email).then((name) {
@@ -67,6 +81,7 @@ class _ManagePageState extends State<ManagePage>
       }
     }).catchError((err) {
       if (!(err is String)) {
+        print('Error during delegate addition');
           print(err);
       }
 
@@ -85,12 +100,28 @@ class _ManagePageState extends State<ManagePage>
       });
     }).catchError((err) {
       if (!(err is String)) {
+        print('Error during delegate removal');
         print(err);
       }
 
       showErrorDialog(this.context,
           title: 'Erreur',
           content: "Impossible de supprimer le délégué  '${delegate.name}'\n$err"
+      );
+    });
+  }
+
+  void doNotifyAll()
+  {
+    notifyAll(notificationController.text).then((_) {
+      notificationController.text = '';
+    }).catchError((err) {
+      print('Error during notification sending');
+      print(err);
+
+      showErrorDialog(this.context,
+          title: 'Erreur',
+          content: "Impossible d'envoyer la notification\n$err"
       );
     });
   }
@@ -107,9 +138,9 @@ class _ManagePageState extends State<ManagePage>
             child: Text('Vous êtes', style: TextStyle(fontSize: 30.0)),
           ),
           Text(
-            user.admin
+            isUserAdmin()
                 ? 'Administrateur'
-                : (user.delegate ? 'Délégué' : 'Rien du tout'),
+                : (isUserDelegate() ? 'Délégué' : 'Rien du tout'),
             style: TextStyle(
                 fontSize: 36.0,
                 fontWeight: FontWeight.bold,
@@ -117,12 +148,19 @@ class _ManagePageState extends State<ManagePage>
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 2.5, bottom: 35.0),
+            padding: EdgeInsets.only(top: 2.5, bottom: !isUserAdmin() ? 10.0 : 35.0),
             child: Text(
               'de la promo ' + user.promo,
               style: TextStyle(fontSize: 24.0)
             ),
           ),
+          !isUserAdmin() ? Padding(
+            padding: const EdgeInsets.only(bottom: 30.0),
+            child: Text(
+              'Administrateur  : ' + data.admin.name,
+              style: TextStyle(fontSize: 17.0, fontStyle: FontStyle.italic)
+            ),
+          ) : Container(),
           EpiCard(
               title: 'Délégués',
               bottomPadding: 10.0,
@@ -138,14 +176,14 @@ class _ManagePageState extends State<ManagePage>
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text(delegate.name, style: TextStyle(fontSize: 16.0),),
-                          InkWell(
+                          isUserAdmin() ? InkWell(
                             child: SvgPicture.asset(
                                 'assets/icons/remove_circle.svg',
                                 color: Color(0xFFAA0000),
                                 height: 20
                             ),
                             onTap: () => removeDelegateDialog(delegate),
-                          )
+                          ) : Container()
                         ],
                       ),
                     )
@@ -153,13 +191,38 @@ class _ManagePageState extends State<ManagePage>
                 )).toList(),
               )
           ),
-          user.admin ? Padding(
-            padding: const EdgeInsets.only(top: 30.0, left: 65.0, right: 65.0),
+          isUserAdmin() ? Padding(
+            padding: const EdgeInsets.only(top: 30.0, left: 65.0, right: 65.0, bottom: 10.0),
             child: EpiButton(
                 text: 'Ajouter un délégué',
                 onPressed: () => addDelegateDialog()
             ),
-          ) : Container()
+          ) : Container(),
+          Padding(
+            padding: const EdgeInsets.only(top: 20.0, bottom: 15.0),
+            child: EpiCard(
+                title: 'Notifier toute la promo',
+                bottomPadding: 0,
+                child: Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                      child: TextField(
+                        maxLines: 5,
+                        controller: notificationController,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 75.0, vertical: 15.0),
+                      child: EpiButton(
+                        text: 'Envoyer',
+                        onPressed: notifyAllDialog
+                      ),
+                    )
+                  ],
+                )
+            ),
+          )
         ],
       )
     );

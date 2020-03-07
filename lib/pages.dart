@@ -15,10 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+import 'package:epilyon/delegates.dart';
+import 'package:epilyon/pages/manage/manage_mimos.dart';
 import 'package:flutter/material.dart';
 
-import 'package:epilyon/auth.dart';
-import 'package:epilyon/pages/manage.dart';
+import 'package:epilyon/pages/manage/manage.dart';
 import 'package:epilyon/pages/about.dart';
 import 'package:epilyon/pages/qcm/qcm_history.dart';
 import 'package:epilyon/pages/qcm/qcm_result.dart';
@@ -56,8 +57,27 @@ final List<Page> pages = [
   Page(
     title: 'Gérer',
     icon: 'assets/icons/build.svg',
-    page: ManagePage(),
-    onlyIf: (user) => user.admin || user.delegate || false
+    onlyIf: () => isUserAdmin() || isUserDelegate() || false,
+    tabIndex: 0,
+    tabs: [
+      Page(
+        title: 'Gestion générale',
+        tabTitle: 'Général',
+        icon: 'assets/icons/build.svg',
+        page: ManagePage()
+      ),
+      Page(
+        title: 'Gestion des MiMos',
+        tabTitle: 'MiMos',
+        icon: 'assets/icons/work.svg',
+        page: ManageMimosPage()
+      ),
+      Page(
+        title: 'Gestion des Q.C.M.s',
+        tabTitle: 'Q.C.M.s',
+        icon: 'assets/icons/check_box.svg'
+      )
+    ]
   ),
   Page(
     title: 'Paramètres',
@@ -86,7 +106,7 @@ class Page
   String action;
   int tabIndex;
 
-  bool Function(User) onlyIf;
+  bool Function() onlyIf;
 
   Page({
     @required this.title,

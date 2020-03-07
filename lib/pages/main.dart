@@ -298,7 +298,7 @@ class _MainPageState extends State<MainPage>
                 padding: const EdgeInsets.only(left: 15.0, top: 20.0),
                 child: Wrap(
                     runSpacing: 10.0,
-                    children: pages.where((page) => page.onlyIf == null || page.onlyIf(user)).map((page) {
+                    children: pages.where((page) => page.onlyIf == null || page.onlyIf()).map((page) {
                       bool selected = page == selectedPage;
                       BorderRadius borderRadius = BorderRadius.only(
                           topLeft: Radius.circular(5),

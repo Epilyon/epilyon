@@ -28,10 +28,11 @@ import 'package:epilyon/auth.dart';
 
 class UserData
 {
-  List<QCM> qcmHistory;
+  Delegate admin;
   List<Delegate> delegates;
+  List<QCM> qcmHistory;
 
-  UserData({ this.qcmHistory, this.delegates });
+  UserData({ this.admin, this.delegates, this.qcmHistory });
 }
 
 UserData data;
@@ -92,6 +93,7 @@ UserData parseData(dynamic data)
   }).toList();
 
   return UserData(
+      admin: Delegate(data['admin']['name'], data['admin']['email']),
       qcmHistory: qcms,
       delegates: delegates
   );
@@ -119,8 +121,17 @@ Future<void> load() async
   await loadUser();
 
   final prefs = await SharedPreferences.getInstance();
-  var qcms = <QCM>[];
+
+  var admin = Delegate("Inconnu", "...");
   var delegates = <Delegate>[];
+  var qcms = <QCM>[];
+
+  if (prefs.containsKey('delegates')) {
+    for (var delegate in prefs.getStringList('delegates')) {
+      var json = jsonDecode(delegate);
+      delegates.add(Delegate(json['name'], json['email']));
+    }
+  }
 
   if (prefs.containsKey('qcms')) {
     for (var qcm in prefs.getStringList('qcms')) {
@@ -134,14 +145,13 @@ Future<void> load() async
     }
   }
 
-  if (prefs.containsKey('delegates')) {
-    for (var delegate in prefs.getStringList('delegates')) {
-      var json = jsonDecode(delegate);
-      delegates.add(Delegate(json['name'], json['email']));
-    }
+  if (prefs.containsKey('admin')) {
+    var json = jsonDecode(prefs.getString('admin'));
+    admin = Delegate(json['name'], json['email']);
   }
 
   data = UserData(
+    admin: admin,
     qcmHistory: qcms,
     delegates: delegates
   );
@@ -152,6 +162,13 @@ Future<void> save() async
   await saveUser();
 
   final prefs = await SharedPreferences.getInstance();
+
+  prefs.setString("admin", jsonEncode({ 'name': data.admin.name, 'email': data.admin.email }));
+
+  prefs.setStringList('delegates', data.delegates.map((delegate) => jsonEncode({
+    'name': delegate.name,
+    'email': delegate.email
+  })).toList());
   
   prefs.setStringList('qcms', data.qcmHistory.map((qcm) => jsonEncode({
     'date': qcm.date.microsecondsSinceEpoch,
@@ -160,10 +177,5 @@ Future<void> save() async
       'subject': grade.subject,
       'grade': grade.grade
     }).toList()
-  })).toList());
-
-  prefs.setStringList('delegates', data.delegates.map((delegate) => jsonEncode({
-    'name': delegate.name,
-    'email': delegate.email
   })).toList());
 }

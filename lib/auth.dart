@@ -37,19 +37,13 @@ class User
   String promo;
   String avatar;
 
-  bool admin;
-  bool delegate;
-
   User(
       this.username,
       this.firstName,
       this.lastName,
       this.email,
       this.promo,
-      this.avatar,
-
-      this.admin,
-      this.delegate
+      this.avatar
   );
 }
 
@@ -82,7 +76,7 @@ Future<bool> refresh() async
   }
 
   _token = json["token"];
-  await setUser(json["user"], json["admin"], json["delegate"]);
+  await setUser(json["user"]);
 
   _logged = true;
   return true;
@@ -105,7 +99,7 @@ Future<bool> login() async
   });
 
   var json = parseResponse(result.body);
-  await setUser(json['user'], json["admin"], json["delegate"]);
+  await setUser(json['user']);
 
   _logged = true;
   return json['first_time'];
@@ -121,7 +115,7 @@ Future<void> cancelLogin() async
   prefs.remove('token');
 }
 
-Future<void> setUser(dynamic user, dynamic admin, dynamic delegate) async
+Future<void> setUser(dynamic user) async
 {
   final prefs = await SharedPreferences.getInstance();
   prefs.setString('token', _token);
@@ -133,9 +127,7 @@ Future<void> setUser(dynamic user, dynamic admin, dynamic delegate) async
       user['last_name'],
       user['email'],
       user['promo'],
-      user['avatar'],
-      admin == true,
-      delegate == true
+      user['avatar']
   );
 
   print("Logged in as '" + _user.firstName + " " + _user.lastName + "'");
@@ -165,11 +157,7 @@ Future<void> loadUser() async
   }
 
   _token = prefs.getString("token");
-  setUser(
-      jsonDecode(prefs.getString('user')),
-      prefs.getString('admin') == 'true',
-      prefs.getString('delegate') == 'true'
-  );
+  setUser(jsonDecode(prefs.getString('user')));
 }
 
 Future<void> saveUser() async
@@ -183,9 +171,6 @@ Future<void> saveUser() async
     'promo': _user.promo,
     'avatar': _user.avatar
   }));
-
-  prefs.setString('admin', _user.admin.toString());
-  prefs.setString('delegate', _user.delegate.toString());
 }
 
 bool isLogged()
