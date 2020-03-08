@@ -22,7 +22,7 @@ class EpiButton extends StatelessWidget
   final GestureTapCallback onPressed;
   final String text;
 
-  EpiButton({ @required this.onPressed, @required this.text });
+  EpiButton({ @required this.text, @required this.onPressed });
 
   @override
   Widget build(BuildContext context)

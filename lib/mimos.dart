@@ -24,55 +24,43 @@ import 'package:epilyon/api_url.dart';
 import 'package:epilyon/auth.dart';
 import 'package:epilyon/data.dart';
 
-Delegate get admin => data.admin;
-List<Delegate> get delegates => data.delegates;
+List<Mimos> get mimos => data.mimos;
 
-bool isUserAdmin()
+Future<void> addMimos(Mimos mimos) async
 {
-  return data.admin.email == getUser().email;
-}
-
-bool isUserDelegate()
-{
-  return data.delegates.any((del) => del.email == getUser().email);
-}
-
-Future<String> addDelegate(String email) async
-{
-  var result = await http.post(API_URL + '/delegates/add', headers: {
+  print(mimosDateFormat.format(mimos.date));
+  var result = await http.post(API_URL + '/mimos/add', headers: {
     'Content-Type': 'application/json',
     'Token': getToken()
-  }, body: jsonEncode({ 'email': email }));
-
-  return parseResponse(utf8.decode(result.bodyBytes))['name'];
-}
-
-Future<void> removeDelegate(String email) async
-{
-  var result = await http.post(API_URL + '/delegates/remove', headers: {
-    'Content-Type': 'application/json',
-    'Token': getToken()
-  }, body: jsonEncode({ 'email': email }));
+  }, body: jsonEncode({
+    'subject': mimos.subject,
+    'number': mimos.number,
+    'title': mimos.title,
+    'date': mimosDateFormat.format(mimos.date)
+  }));
 
   parseResponse(utf8.decode(result.bodyBytes));
 }
 
-Future<void> notifyAll(String text) async
+Future<void> removeMimos(String subject, int number) async
 {
-  print('aaa' + getToken());
-  var result = await http.post(API_URL + '/delegates/notify', headers: {
+  var result = await http.post(API_URL + '/mimos/remove', headers: {
     'Content-Type': 'application/json',
     'Token': getToken()
-  }, body: jsonEncode({ 'content': text }));
-  print('ooo' + result.body);
+  }, body: jsonEncode({
+    'subject': subject,
+    'number': number
+  }));
 
   parseResponse(utf8.decode(result.bodyBytes));
 }
 
-class Delegate
+class Mimos
 {
-  String name;
-  String email;
+  String subject;
+  int number;
+  String title;
+  DateTime date;
 
-  Delegate(this.name, this.email);
+  Mimos(this.subject, this.number, this.title, this.date);
 }

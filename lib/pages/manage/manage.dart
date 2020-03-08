@@ -179,7 +179,7 @@ class _ManagePageState extends State<ManagePage>
                           isUserAdmin() ? InkWell(
                             child: SvgPicture.asset(
                                 'assets/icons/remove_circle.svg',
-                                color: Color(0xFFAA0000),
+                                color: Color(0xFF9D0000),
                                 height: 20
                             ),
                             onTap: () => removeDelegateDialog(delegate),

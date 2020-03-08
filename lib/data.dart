@@ -17,7 +17,6 @@
  */
 import 'dart:convert';
 
-import 'package:epilyon/delegates.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -25,17 +24,23 @@ import 'package:http/http.dart' as http;
 import 'package:epilyon/api_url.dart';
 import 'package:epilyon/api.dart';
 import 'package:epilyon/auth.dart';
+import 'package:epilyon/delegates.dart';
+import 'package:epilyon/mimos.dart';
 
 class UserData
 {
   Delegate admin;
   List<Delegate> delegates;
   List<QCM> qcmHistory;
+  List<Mimos> mimos;
 
-  UserData({ this.admin, this.delegates, this.qcmHistory });
+  UserData({ this.admin, this.delegates, this.qcmHistory, this.mimos });
 }
 
 UserData data;
+
+DateFormat qcmDateFormat = new DateFormat('yyyy-MM-dd');
+DateFormat mimosDateFormat = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
 Future<void> testConnection() async {
   await http.get('http://google.com/');
@@ -64,7 +69,10 @@ Future<void> forceRefresh() async {
 
 UserData parseData(dynamic data)
 {
-  DateFormat format = new DateFormat('yyyy-MM-dd');
+  List<Delegate> delegates = data['delegates'].map<Delegate>((delegate) {
+    return Delegate(delegate['name'], delegate['email']);
+  }).toList();
+
   List<QCM> qcms = data['qcm_history'].map<QCM>((qcm) {
     List<QCMGrade> grades = qcm['grades'].map<QCMGrade>((grade) => QCMGrade(
         grade['subject'],
@@ -80,7 +88,7 @@ UserData parseData(dynamic data)
     }
 
     return QCM(
-        format.parse(qcm['date']),
+        qcmDateFormat.parse(qcm['date']),
         qcm['average'],
         grades
     );
@@ -88,14 +96,18 @@ UserData parseData(dynamic data)
 
   qcms.sort((a, b) => -a.date.compareTo(b.date));
 
-  List<Delegate> delegates = data['delegates'].map<Delegate>((delegate) {
-    return Delegate(delegate['name'], delegate['email']);
-  }).toList();
+  List<Mimos> mimos = data['mimos'].map<Mimos>((mimos) => Mimos(
+      mimos['subject'],
+      mimos['number'],
+      mimos['title'],
+      mimosDateFormat.parse(mimos['date'])
+  )).toList();
 
   return UserData(
       admin: Delegate(data['admin']['name'], data['admin']['email']),
+      delegates: delegates,
       qcmHistory: qcms,
-      delegates: delegates
+      mimos: mimos
   );
 }
 
@@ -125,6 +137,12 @@ Future<void> load() async
   var admin = Delegate("Inconnu", "...");
   var delegates = <Delegate>[];
   var qcms = <QCM>[];
+  var mimos = <Mimos>[];
+
+  if (prefs.containsKey('admin')) {
+    var json = jsonDecode(prefs.getString('admin'));
+    admin = Delegate(json['name'], json['email']);
+  }
 
   if (prefs.containsKey('delegates')) {
     for (var delegate in prefs.getStringList('delegates')) {
@@ -145,15 +163,24 @@ Future<void> load() async
     }
   }
 
-  if (prefs.containsKey('admin')) {
-    var json = jsonDecode(prefs.getString('admin'));
-    admin = Delegate(json['name'], json['email']);
+  if (prefs.containsKey('mimos')) {
+    for (var m in prefs.getStringList('mimos')) {
+      var json = jsonDecode(m);
+
+      mimos.add(Mimos(
+          json['subject'],
+          json['number'],
+          json['title'],
+          mimosDateFormat.parse(json['date'])
+      ));
+    }
   }
 
   data = UserData(
-    admin: admin,
-    qcmHistory: qcms,
-    delegates: delegates
+      admin: admin,
+      delegates: delegates,
+      qcmHistory: qcms,
+      mimos: mimos
   );
 }
 
@@ -177,5 +204,12 @@ Future<void> save() async
       'subject': grade.subject,
       'grade': grade.grade
     }).toList()
+  })).toList());
+
+  prefs.setStringList('mimos', data.mimos.map((mimos) => jsonEncode({
+    'subject': mimos.subject,
+    'number': mimos.number,
+    'title': mimos.title,
+    'date': mimosDateFormat.format(mimos.date)
   })).toList());
 }

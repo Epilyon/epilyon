@@ -15,12 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import 'package:epilyon/delegates.dart';
-import 'package:epilyon/pages/manage/manage_mimos.dart';
 import 'package:flutter/material.dart';
 
-import 'package:epilyon/pages/manage/manage.dart';
+import 'package:epilyon/delegates.dart';
 import 'package:epilyon/pages/about.dart';
+import 'package:epilyon/pages/mimos.dart';
+import 'package:epilyon/pages/manage/manage.dart';
 import 'package:epilyon/pages/qcm/qcm_history.dart';
 import 'package:epilyon/pages/qcm/qcm_result.dart';
 
@@ -52,7 +52,7 @@ final List<Page> pages = [
   Page(
     title: 'MiMos',
     icon: 'assets/icons/work.svg',
-    //page:
+    page: MimosPage()
   ),
   Page(
     title: 'Gérer',
@@ -70,7 +70,7 @@ final List<Page> pages = [
         title: 'Gestion des MiMos',
         tabTitle: 'MiMos',
         icon: 'assets/icons/work.svg',
-        page: ManageMimosPage()
+        page: MimosPage(canAdd: true, canRemove: true)
       ),
       Page(
         title: 'Gestion des Q.C.M.s',
