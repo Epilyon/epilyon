@@ -24,24 +24,24 @@ import 'package:epilyon/pages/manage/manage.dart';
 import 'package:epilyon/pages/qcm/qcm_history.dart';
 import 'package:epilyon/pages/qcm/qcm_result.dart';
 
-final List<Page> pages = [
-  Page(
+final List<EpiPage> pages = [
+  EpiPage(
       title: 'Q.C.M.s',
       icon: 'assets/icons/check_box.svg',
       tabIndex: 1, // TODO: Change this depending on the day/time
       tabs: [
-        Page(
+        EpiPage(
           title: 'Prochain Q.C.M.',
           tabTitle: 'Prochain',
           icon: 'assets/icons/edit.svg',
         ),
-        Page(
+        EpiPage(
             title: 'Résultats du Q.C.M.',
             tabTitle: 'Résultats',
             icon: 'assets/icons/done_all.svg',
             page: QCMResultPage()
         ),
-        Page(
+        EpiPage(
             title: 'Historique des Q.C.M.s',
             icon: 'assets/icons/list.svg',
             tabTitle: 'Historique',
@@ -49,66 +49,66 @@ final List<Page> pages = [
         )
       ]
   ),
-  Page(
+  EpiPage(
     title: 'MiMos',
     icon: 'assets/icons/work.svg',
     page: MimosPage()
   ),
-  Page(
+  EpiPage(
     title: 'Gérer',
     icon: 'assets/icons/build.svg',
     onlyIf: () => isUserAdmin() || isUserDelegate() || false,
     tabIndex: 0,
     tabs: [
-      Page(
+      EpiPage(
         title: 'Gestion générale',
         tabTitle: 'Général',
         icon: 'assets/icons/build.svg',
         page: ManagePage()
       ),
-      Page(
+      EpiPage(
         title: 'Gestion des MiMos',
         tabTitle: 'MiMos',
         icon: 'assets/icons/work.svg',
         page: MimosPage(canAdd: true, canRemove: true)
       ),
-      Page(
+      EpiPage(
         title: 'Gestion des Q.C.M.s',
         tabTitle: 'Q.C.M.s',
         icon: 'assets/icons/check_box.svg'
       )
     ]
   ),
-  Page(
+  EpiPage(
     title: 'Paramètres',
     icon: 'assets/icons/settings.svg',
     //page:
   ),
-  Page(
+  EpiPage(
       title: 'Se déconnecter',
       icon: 'assets/icons/first_page.svg',
       action: 'logout'
   ),
-  Page(
+  EpiPage(
       title: 'À Propos',
       icon: 'assets/icons/info.svg',
       page: AboutPage()
   ),
 ];
 
-class Page
+class EpiPage
 {
   String title;
   String tabTitle;
   String icon;
   Widget page;
-  List<Page> tabs;
+  List<EpiPage> tabs;
   String action;
   int tabIndex;
 
   bool Function() onlyIf;
 
-  Page({
+  EpiPage({
     @required this.title,
     this.tabTitle,
     @required this.icon,

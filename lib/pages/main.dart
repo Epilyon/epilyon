@@ -45,7 +45,7 @@ class MainPage extends StatefulWidget
 class _MainPageState extends State<MainPage>
 {
   // TODO: Page switching animation ?
-  Page selectedPage;
+  EpiPage selectedPage;
   BuildContext _dialogContext;
 
   @override
@@ -238,9 +238,10 @@ class _MainPageState extends State<MainPage>
                                                   user.promo == '2024' ? 'SUP' : 'SPÉ', // TODO: Smart way,
                                                   style: TextStyle(
                                                       height: 1,
-                                                      fontFamily: 'Lato3',
+                                                      fontFamily: 'LatoE',
                                                       fontSize: 18.0,
                                                       fontWeight: FontWeight.w600,
+                                                      fontStyle: FontStyle.italic,
                                                       color: Colors.white
                                                   )
                                               ),

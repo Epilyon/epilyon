@@ -50,5 +50,12 @@ Future<dynamic> handleBackgroundMessage(Map<String, dynamic> message) async {
 }
 
 Future<String> getDeviceToken() async {
-  return await _firebaseMessaging.getToken();
+  try {
+    return await _firebaseMessaging.getToken();
+  } catch (e) {
+    print('Error while getting device token');
+    print(e);
+
+    return "nope";
+  }
 }

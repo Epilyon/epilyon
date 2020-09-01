@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget
         fontFamily: 'Roboto',
         appBarTheme: AppBarTheme(
           textTheme: TextTheme(
-              title: TextStyle(fontFamily: 'Lato2', fontSize: 19, fontWeight: FontWeight.w600)
+              headline6: TextStyle(fontFamily: 'LatoE', fontSize: 19, fontWeight: FontWeight.w600)
           ),
           elevation: 0
         )

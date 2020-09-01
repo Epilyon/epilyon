@@ -47,7 +47,6 @@ class _RefreshButtonState extends State<RefreshButton> with SingleTickerProvider
     super.initState();
 
     _animationController = new AnimationController(
-      vsync: this,
       duration: Duration(seconds: 1),
     );
     _animation = Tween(begin: 0.0, end: 2 * pi).animate(
