@@ -48,6 +48,7 @@ class _RefreshButtonState extends State<RefreshButton> with SingleTickerProvider
 
     _animationController = new AnimationController(
       duration: Duration(seconds: 1),
+      vsync: this
     );
     _animation = Tween(begin: 0.0, end: 2 * pi).animate(
         CurvedAnimation(parent: _animationController, curve: Curves.ease)
@@ -60,9 +61,9 @@ class _RefreshButtonState extends State<RefreshButton> with SingleTickerProvider
       return;
     }
 
-    setState(() {
-      _refreshing = true;
+    _refreshing = true;
 
+    setState(() {
       _animationController.reset();
       _animationController.forward();
     });
@@ -84,11 +85,7 @@ class _RefreshButtonState extends State<RefreshButton> with SingleTickerProvider
 
       Scaffold.of(context).showSnackBar(
           SnackBar(content: Text('Terminé !'), duration: Duration(seconds: 2),)
-      );
-
-      setState(() {
-        _refreshing = false;
-      });
+      ).closed.then((value) => _refreshing = false);
     });
   }
 
