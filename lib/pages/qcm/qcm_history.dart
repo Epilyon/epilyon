@@ -53,7 +53,7 @@ class _QCMHistoryPageState extends State<QCMHistoryPage>
           children: <Widget>[
             now.month >= 1 && now.month <= 6
                 ? getSemester(2 + shift, secondSemester, now)
-                : Container()(),
+                : Container(),
             getSemester(1 + shift, firstSemester, secondSemester)
           ]
         ),
