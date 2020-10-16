@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+import 'package:epilyon/auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -42,14 +43,19 @@ class _QCMHistoryPageState extends State<QCMHistoryPage>
     DateTime firstSemester = DateTime(now.month < 8 ? now.year - 1 : now.year, 9, 1);
     DateTime secondSemester = DateTime(now.month < 8 ? now.year : now.year + 1, 1, 1);
 
+    // TODO: More dynamic way
+    var shift = getUser().promo == "2025" ? 0 : 2;
+
+    var first = getSemester(2 + shift, secondSemester, now);
+    var second = getSemester(1 + shift, firstSemester, secondSemester);
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10.0),
         child: Column(
-          children: <Widget>[
-            getSemester(2, secondSemester, now),
-            getSemester(1, firstSemester, secondSemester)
-          ],
+          children: now.month >= 1 && now.month <= 6
+              ? <Widget>[second, first]
+              : <Widget>[first, second],
         ),
       ),
     );
