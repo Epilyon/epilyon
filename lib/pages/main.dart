@@ -233,13 +233,13 @@ class _MainPageState extends State<MainPage>
                                         child: Column(
                                           children: <Widget>[
                                             Padding(
-                                              padding: const EdgeInsets.only(left: 5.0, right: 5.0, top: 3.0),
+                                              padding: const EdgeInsets.only(left: 5.0, right: 6.0, top: 3.5),
                                               child: Text(
-                                                  user.promo == '2024' ? 'SPÉ' : 'SUP', // TODO: Smart way,
+                                                  user.promo == '2024' ? 'SPE' : 'SUP', // TODO: Smart way,
                                                   style: TextStyle(
                                                       height: 1,
                                                       fontFamily: 'LatoE',
-                                                      fontSize: 18.0,
+                                                      fontSize: 17.0,
                                                       fontWeight: FontWeight.w600,
                                                       fontStyle: FontStyle.italic,
                                                       color: Colors.white
