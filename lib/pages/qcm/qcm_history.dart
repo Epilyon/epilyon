@@ -46,16 +46,16 @@ class _QCMHistoryPageState extends State<QCMHistoryPage>
     // TODO: More dynamic way
     var shift = getUser().promo == "2025" ? 0 : 2;
 
-    var first = getSemester(2 + shift, secondSemester, now);
-    var second = getSemester(1 + shift, firstSemester, secondSemester);
-
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10.0),
         child: Column(
-          children: now.month >= 1 && now.month <= 6
-              ? <Widget>[second, first]
-              : <Widget>[first, second],
+          children: <Widget>[
+            now.month >= 1 && now.month <= 6
+                ? getSemester(2 + shift, secondSemester, now)
+                : Container()(),
+            getSemester(1 + shift, firstSemester, secondSemester)
+          ]
         ),
       ),
     );

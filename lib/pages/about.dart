@@ -64,12 +64,11 @@ class _AboutPageState extends State<AboutPage>
                   padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 15.0),
                   child: Text(
                     "Mathis P., Louis P. et Ugo M.\n"
-                    "Valentin C.\n"
-                    "Martin S.\n"
+                    "Valentin C., Martin S. et Simon Z.\n"
                     "Matthieu (utybo)\n"
                     "Yann Michaux\n"
-                    "Théo (Thelox), Thomas (Uxon)\n"
-                    "Shika",
+                    "Théo (Thelox), Thomas (Uxon),\n"
+                    "et Abdel (Shika)",
                     style: TextStyle(
                       fontSize: 18,
                       fontStyle: FontStyle.italic,

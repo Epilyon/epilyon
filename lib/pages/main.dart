@@ -172,7 +172,7 @@ class _MainPageState extends State<MainPage>
       data: Theme.of(context).copyWith(
           canvasColor: primary,
           textTheme: TextTheme(
-              body2: TextStyle(color: Colors.white, fontFamily: 'Lato2', fontSize: 18, fontWeight: FontWeight.w600)
+              bodyText1: TextStyle(color: Colors.white, fontFamily: 'LatoE', fontSize: 18, fontWeight: FontWeight.w600)
           )
       ),
       child: Drawer(
@@ -182,7 +182,7 @@ class _MainPageState extends State<MainPage>
             Theme(
               data: Theme.of(context).copyWith(
                   textTheme: TextTheme(
-                      body1: TextStyle(color: Colors.black, fontFamily: 'Lato')
+                      bodyText2: TextStyle(color: Colors.black, fontFamily: 'Lato', fontSize: 18)
                   )
               ),
               child: Container(
@@ -235,7 +235,7 @@ class _MainPageState extends State<MainPage>
                                             Padding(
                                               padding: const EdgeInsets.only(left: 5.0, right: 5.0, top: 3.0),
                                               child: Text(
-                                                  user.promo == '2024' ? 'SUP' : 'SPÉ', // TODO: Smart way,
+                                                  user.promo == '2024' ? 'SPÉ' : 'SUP', // TODO: Smart way,
                                                   style: TextStyle(
                                                       height: 1,
                                                       fontFamily: 'LatoE',
