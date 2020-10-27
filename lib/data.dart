@@ -26,20 +26,22 @@ import 'package:epilyon/api.dart';
 import 'package:epilyon/auth.dart';
 import 'package:epilyon/delegates.dart';
 import 'package:epilyon/mimos.dart';
+import 'package:epilyon/mcq.dart';
 
 class UserData
 {
   Delegate admin;
   List<Delegate> delegates;
-  List<QCM> qcmHistory;
+  List<MCQ> mcqHistory;
   List<Mimos> mimos;
+  NextMCQ nextMcq;
 
-  UserData({ this.admin, this.delegates, this.qcmHistory, this.mimos });
+  UserData({ this.admin, this.delegates, this.mcqHistory, this.mimos, this.nextMcq });
 }
 
 UserData data;
 
-DateFormat qcmDateFormat = new DateFormat('yyyy-MM-dd');
+DateFormat mcqDateFormat = new DateFormat('yyyy-MM-dd');
 DateFormat mimosDateFormat = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
 Future<void> testConnection() async {
@@ -67,14 +69,16 @@ Future<void> forceRefresh() async {
   parseResponse(result.body);
 }
 
+// TODO: Rework this part SOON
+
 UserData parseData(dynamic data)
 {
   List<Delegate> delegates = data['delegates'].map<Delegate>((delegate) {
     return Delegate(delegate['name'], delegate['email']);
   }).toList();
 
-  List<QCM> qcms = data['qcm_history'].map<QCM>((qcm) {
-    List<QCMGrade> grades = qcm['grades'].map<QCMGrade>((grade) => QCMGrade(
+  List<MCQ> mcqs = data['mcq_history'].map<MCQ>((mcq) {
+    List<MCQGrade> grades = mcq['grades'].map<MCQGrade>((grade) => MCQGrade(
         grade['subject'],
         grade['points']
             .map((p) => p as double)
@@ -87,14 +91,14 @@ UserData parseData(dynamic data)
       grades.insert(6, grades.removeAt(0));
     }
 
-    return QCM(
-        qcmDateFormat.parse(qcm['date']),
-        qcm['average'],
+    return MCQ(
+        mcqDateFormat.parse(mcq['date']),
+        mcq['average'],
         grades
     );
   }).toList();
 
-  qcms.sort((a, b) => -a.date.compareTo(b.date));
+  mcqs.sort((a, b) => -a.date.compareTo(b.date));
 
   List<Mimos> mimos = data['mimos'].map<Mimos>((mimos) => Mimos(
       mimos['subject'],
@@ -103,29 +107,24 @@ UserData parseData(dynamic data)
       mimosDateFormat.parse(mimos['date'])
   )).toList();
 
+  var next = data['next_qcm'];
+  NextMCQ nextMcq = NextMCQ(
+    next['skipped'],
+    mimosDateFormat.parse(next['at']),
+    next['revisions'].map<MCQRevision>((revision) => MCQRevision(
+      revision['subject'],
+      revision['work']
+    )).toList(),
+    next['last_editor']
+  );
+
   return UserData(
       admin: Delegate(data['admin']['name'], data['admin']['email']),
       delegates: delegates,
-      qcmHistory: qcms,
-      mimos: mimos
+      mcqHistory: mcqs,
+      mimos: mimos,
+      nextMcq: nextMcq
   );
-}
-
-class QCM
-{
-  DateTime date;
-  double average;
-  List<QCMGrade> grades;
-
-  QCM(this.date, this.average, this.grades);
-}
-
-class QCMGrade
-{
-  String subject;
-  double grade;
-
-  QCMGrade(this.subject, this.grade);
 }
 
 Future<void> load() async
@@ -136,8 +135,9 @@ Future<void> load() async
 
   var admin = Delegate("Inconnu", "...");
   var delegates = <Delegate>[];
-  var qcms = <QCM>[];
+  var mcqs = <MCQ>[];
   var mimos = <Mimos>[];
+  NextMCQ nextMcq;
 
   if (prefs.containsKey('admin')) {
     var json = jsonDecode(prefs.getString('admin'));
@@ -151,14 +151,14 @@ Future<void> load() async
     }
   }
 
-  if (prefs.containsKey('qcms')) {
-    for (var qcm in prefs.getStringList('qcms')) {
-      var json = jsonDecode(qcm);
+  if (prefs.containsKey('mcqs')) {
+    for (var mcq in prefs.getStringList('mcqs')) {
+      var json = jsonDecode(mcq);
 
-      qcms.add(QCM(
+      mcqs.add(MCQ(
           DateTime.fromMicrosecondsSinceEpoch(json['date']),
           json['average'],
-          json['grades'].map<QCMGrade>((g) => QCMGrade(g['subject'], g['grade'])).toList()
+          json['grades'].map<MCQGrade>((g) => MCQGrade(g['subject'], g['grade'])).toList()
       ));
     }
   }
@@ -176,10 +176,21 @@ Future<void> load() async
     }
   }
 
+  if (prefs.containsKey('nextMcq')) {
+    var json = jsonDecode(prefs.getString("nextMcq"));
+
+    nextMcq = NextMCQ(
+      json['skipped'],
+      mimosDateFormat.parse(json['at']),
+      json['revisions'].map<MCQRevision>((r) => MCQRevision(r['subject'], r['work'])).toList(),
+      json['lastEditor']
+    );
+  }
+
   data = UserData(
       admin: admin,
       delegates: delegates,
-      qcmHistory: qcms,
+      mcqHistory: mcqs,
       mimos: mimos
   );
 }
@@ -197,10 +208,10 @@ Future<void> save() async
     'email': delegate.email
   })).toList());
   
-  prefs.setStringList('qcms', data.qcmHistory.map((qcm) => jsonEncode({
-    'date': qcm.date.microsecondsSinceEpoch,
-    'average': qcm.average,
-    'grades': qcm.grades.map((grade) => {
+  prefs.setStringList('mcqs', data.mcqHistory.map((mcq) => jsonEncode({
+    'date': mcq.date.microsecondsSinceEpoch,
+    'average': mcq.average,
+    'grades': mcq.grades.map((grade) => {
       'subject': grade.subject,
       'grade': grade.grade
     }).toList()
@@ -212,4 +223,19 @@ Future<void> save() async
     'title': mimos.title,
     'date': mimosDateFormat.format(mimos.date)
   })).toList());
+
+  Map<String, Object> next;
+  if (data.nextMcq != null) {
+    next = {
+      'skipped': data.nextMcq.skipped,
+      'at': mimosDateFormat.format(data.nextMcq.at),
+      'revisions': data.nextMcq.revisions.map((r) => {
+        'subject': r.subject,
+        'work': r.work
+      }),
+      'lastEditor': data.nextMcq.lastEditor
+    };
+  }
+
+  prefs.setString("nextMcq", jsonEncode(next));
 }

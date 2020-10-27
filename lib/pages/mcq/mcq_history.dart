@@ -15,26 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import 'package:epilyon/auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
+import 'package:epilyon/auth.dart';
 import 'package:epilyon/widgets/card.dart';
 import 'package:epilyon/data.dart';
+import 'package:epilyon/mcq.dart';
 import 'package:epilyon/pages/base.dart';
-import 'package:epilyon/pages/qcm/qcm_result.dart';
+import 'package:epilyon/pages/mcq/mcq_result.dart';
 
-class QCMHistoryPage extends StatefulWidget
+class MCQHistoryPage extends StatefulWidget
 {
-  QCMHistoryPage({ Key key }) : super(key: key);
+  MCQHistoryPage({ Key key }) : super(key: key);
 
   @override
-  _QCMHistoryPageState createState() => _QCMHistoryPageState();
+  _MCQHistoryPageState createState() => _MCQHistoryPageState();
 }
 
-class _QCMHistoryPageState extends State<QCMHistoryPage>
+class _MCQHistoryPageState extends State<MCQHistoryPage>
 {
   @override
   Widget build(BuildContext context)
@@ -65,8 +66,8 @@ class _QCMHistoryPageState extends State<QCMHistoryPage>
   {
     DateFormat format = new DateFormat("dd MMMM", 'fr_FR');
 
-    List<QCM> qcms = data.qcmHistory.where((qcm) {
-      return qcm.date.compareTo(from) >= 0 && qcm.date.compareTo(to) < 0;
+    List<MCQ> mcqs = data.mcqHistory.where((mcq) {
+      return mcq.date.compareTo(from) >= 0 && mcq.date.compareTo(to) < 0;
     }).toList();
 
     return Padding(
@@ -75,7 +76,7 @@ class _QCMHistoryPageState extends State<QCMHistoryPage>
           title: "Semestre n°$num",
           bottomPadding: 10.0,
           child: Column(
-            children: qcms.map((qcm) => Column(
+            children: mcqs.map((mcq) => Column(
               children: <Widget>[
                 Divider(
                   height: 0,
@@ -84,25 +85,25 @@ class _QCMHistoryPageState extends State<QCMHistoryPage>
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) {
                       return BasePage(
-                          title: 'QCM du ' + format.format(qcm.date),
-                          child: QCMResultPage(qcm: qcm)
+                          title: 'QCM du ' + format.format(mcq.date),
+                          child: MCQResultPage(mcq: mcq)
                       );
                     }));
                   },
-                  isLast: qcm == qcms[qcms.length - 1],
+                  isLast: mcq == mcqs[mcqs.length - 1],
                   child: Padding(
-                    padding: EdgeInsets.only(bottom: qcm == qcms[qcms.length - 1] ? 1.5 : 0.0),
+                    padding: EdgeInsets.only(bottom: mcq == mcqs[mcqs.length - 1] ? 1.5 : 0.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Padding(
                           padding: const EdgeInsets.only(left: 15.0),
-                          child: Text(format.format(qcm.date), style: TextStyle(fontSize: 17.0)),
+                          child: Text(format.format(mcq.date), style: TextStyle(fontSize: 17.0)),
                         ),
                         Row(
                           children: <Widget>[
                             Text(
-                              qcm.average.toStringAsFixed(1),
+                              mcq.average.toStringAsFixed(1),
                               style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.w500),
                             ),
                             Text('/20', style: TextStyle(fontSize: 17.0)),

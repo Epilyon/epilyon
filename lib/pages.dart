@@ -21,8 +21,8 @@ import 'package:epilyon/delegates.dart';
 import 'package:epilyon/pages/about.dart';
 import 'package:epilyon/pages/mimos.dart';
 import 'package:epilyon/pages/manage/manage.dart';
-import 'package:epilyon/pages/qcm/qcm_history.dart';
-import 'package:epilyon/pages/qcm/qcm_result.dart';
+import 'package:epilyon/pages/mcq/mcq_history.dart';
+import 'package:epilyon/pages/mcq/mcq_result.dart';
 
 final List<EpiPage> pages = [
   EpiPage(
@@ -39,13 +39,13 @@ final List<EpiPage> pages = [
             title: 'Résultats du Q.C.M.',
             tabTitle: 'Résultats',
             icon: 'assets/icons/done_all.svg',
-            page: QCMResultPage()
+            page: MCQResultPage()
         ),
         EpiPage(
             title: 'Historique des Q.C.M.s',
             icon: 'assets/icons/list.svg',
             tabTitle: 'Historique',
-            page: QCMHistoryPage()
+            page: MCQHistoryPage()
         )
       ]
   ),

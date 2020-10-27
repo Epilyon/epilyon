@@ -20,18 +20,19 @@ import 'package:intl/intl.dart';
 
 import 'package:epilyon/widgets/card.dart';
 import 'package:epilyon/data.dart';
+import 'package:epilyon/mcq.dart';
 
-class QCMResultPage extends StatefulWidget
+class MCQResultPage extends StatefulWidget
 {
-  final QCM qcm;
+  final MCQ mcq;
 
-  QCMResultPage({ Key key, this.qcm }) : super(key: key);
+  MCQResultPage({ Key key, this.mcq }) : super(key: key);
 
   @override
-  _QCMResultPageState createState() => _QCMResultPageState();
+  _MCQResultPageState createState() => _MCQResultPageState();
 }
 
-class _QCMResultPageState extends State<QCMResultPage>
+class _MCQResultPageState extends State<MCQResultPage>
 {
   Color greenGrade = Color(0xFF04C800);
   Color redGrade = Color(0xFFD90000);
@@ -39,7 +40,7 @@ class _QCMResultPageState extends State<QCMResultPage>
   @override
   Widget build(BuildContext context)
   {
-    if (widget.qcm == null && data.qcmHistory.length == 0) {
+    if (widget.mcq == null && data.mcqHistory.length == 0) {
       return Center(
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -53,13 +54,13 @@ class _QCMResultPageState extends State<QCMResultPage>
       );
     }
 
-    QCM qcm = widget.qcm != null ? widget.qcm : data.qcmHistory[0];
-    QCM previous;
+    MCQ mcq = widget.mcq != null ? widget.mcq : data.mcqHistory[0];
+    MCQ previous;
 
-    for (int i = 0; i < data.qcmHistory.length; i++) {
-      if (data.qcmHistory[i] == qcm) {
-        if (i + 1 < data.qcmHistory.length) {
-          previous = data.qcmHistory[i + 1];
+    for (int i = 0; i < data.mcqHistory.length; i++) {
+      if (data.mcqHistory[i] == mcq) {
+        if (i + 1 < data.mcqHistory.length) {
+          previous = data.mcqHistory[i + 1];
         }
 
         break;
@@ -74,13 +75,13 @@ class _QCMResultPageState extends State<QCMResultPage>
         child: Column(
           children: <Widget>[
             Text(
-              'QCM du ' + format.format(qcm.date),
+              'QCM du ' + format.format(mcq.date),
               style: TextStyle(fontSize: 16),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
               child: Text(
-                qcm.average.toStringAsFixed(1) + '/20',
+                mcq.average.toStringAsFixed(1) + '/20',
                 style: TextStyle(fontSize: 52, fontWeight: FontWeight.bold),
               ),
             ),
@@ -93,7 +94,7 @@ class _QCMResultPageState extends State<QCMResultPage>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  compare(qcm.average, previous.average),
+                  compare(mcq.average, previous.average),
                   Text('par rapport au précédent', style: TextStyle(fontSize: 18.0))
                 ],
               ),
@@ -105,8 +106,8 @@ class _QCMResultPageState extends State<QCMResultPage>
                   child: Padding(
                     padding: const EdgeInsets.only(left: 25.0, bottom: 10.0, right: 22.5),
                     child: Column(
-                      children: qcm.grades.map<Widget>((grade) {
-                        QCMGrade last = previous == null
+                      children: mcq.grades.map<Widget>((grade) {
+                        MCQGrade last = previous == null
                             ? null
                             : previous.grades.firstWhere((g) => grade.subject == g.subject);
 
