@@ -114,7 +114,6 @@ UserData parseData(dynamic data)
         )).toList(),
         next['last_editor']
     );
-    print('Next MCQ is at ${nextMcq.at}');
   }
 
   return UserData(
