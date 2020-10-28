@@ -86,11 +86,6 @@ UserData parseData(dynamic data)
             .reduce((a, b) => a + b)
     )).toList();
 
-    if (grades.length == 7 && grades[0].subject == 'Élec.') {
-      grades.insert(6, grades.removeAt(0));
-      grades.insert(6, grades.removeAt(0));
-    }
-
     return MCQ(
         mcqDateFormat.parse(mcq['date']),
         mcq['average'],
@@ -107,16 +102,20 @@ UserData parseData(dynamic data)
       mimosDateFormat.parse(mimos['date'])
   )).toList();
 
-  var next = data['next_qcm'];
-  NextMCQ nextMcq = NextMCQ(
-    next['skipped'],
-    mimosDateFormat.parse(next['at']),
-    next['revisions'].map<MCQRevision>((revision) => MCQRevision(
-      revision['subject'],
-      revision['work']
-    )).toList(),
-    next['last_editor']
-  );
+  var next = data['next_mcq'];
+  NextMCQ nextMcq;
+  if (next != null) {
+    nextMcq = NextMCQ(
+        next['skipped'],
+        mimosDateFormat.parse(next['at']),
+        next['revisions'].map<MCQRevision>((revision) => MCQRevision(
+            revision['subject'],
+            revision['work'].map<String>((s) => s as String).toList()
+        )).toList(),
+        next['last_editor']
+    );
+    print('Next MCQ is at ${nextMcq.at}');
+  }
 
   return UserData(
       admin: Delegate(data['admin']['name'], data['admin']['email']),
@@ -179,12 +178,17 @@ Future<void> load() async
   if (prefs.containsKey('nextMcq')) {
     var json = jsonDecode(prefs.getString("nextMcq"));
 
-    nextMcq = NextMCQ(
-      json['skipped'],
-      mimosDateFormat.parse(json['at']),
-      json['revisions'].map<MCQRevision>((r) => MCQRevision(r['subject'], r['work'])).toList(),
-      json['lastEditor']
-    );
+    if (json != null) {
+      nextMcq = NextMCQ(
+          json['skipped'],
+          mimosDateFormat.parse(json['at']),
+          json['revisions'].map<MCQRevision>((r) => MCQRevision(
+              r['subject'],
+              r['work'].map<String>((s) => s as String).toList()
+          )).toList(),
+          json['lastEditor']
+      );
+    }
   }
 
   data = UserData(
@@ -232,7 +236,7 @@ Future<void> save() async
       'revisions': data.nextMcq.revisions.map((r) => {
         'subject': r.subject,
         'work': r.work
-      }),
+      }).toList(),
       'lastEditor': data.nextMcq.lastEditor
     };
   }
