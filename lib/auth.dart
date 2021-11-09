@@ -28,8 +28,7 @@ String _token = "";
 User _user;
 bool _logged = false;
 
-class User
-{
+class User {
   String username;
   String firstName;
   String lastName;
@@ -37,24 +36,18 @@ class User
   String promo;
   String avatar;
 
-  User(
-      this.username,
-      this.firstName,
-      this.lastName,
-      this.email,
-      this.promo,
-      this.avatar
-  );
+  User(this.username, this.firstName, this.lastName, this.email, this.promo,
+      this.avatar);
 }
 
-Future<bool> canRefresh() async
-{
+Future<bool> canRefresh() async {
   final prefs = await SharedPreferences.getInstance();
-  return !_logged && prefs.getString('token') != null && prefs.containsKey("user");
+  return !_logged &&
+      prefs.getString('token') != null &&
+      prefs.containsKey("user");
 }
 
-Future<bool> refresh() async
-{
+Future<bool> refresh() async {
   final prefs = await SharedPreferences.getInstance();
   var token = prefs.getString('token');
   if (token == null) {
@@ -63,9 +56,8 @@ Future<bool> refresh() async
 
   print('Loading token : ' + token);
 
-  var result = await http.post(API_URL + '/auth/refresh', headers: {
-    'Token': token
-  });
+  var result = await http
+      .post(Uri.parse(API_URL + '/auth/refresh'), headers: {'Token': token});
 
   var json;
   try {
@@ -82,21 +74,18 @@ Future<bool> refresh() async
   return true;
 }
 
-Future<void> createSession() async
-{
+Future<void> createSession() async {
   var deviceToken = await getDeviceToken();
-  var result = await http.post(API_URL + '/auth/start', headers: {
-    'Content-Type': 'application/json'
-  }, body: '{"device_token": "$deviceToken"}');
+  var result = await http.post(Uri.parse(API_URL + '/auth/start'),
+      headers: {'Content-Type': 'application/json'},
+      body: '{"device_token": "$deviceToken"}');
 
   _token = parseResponse(result.body)['token'];
 }
 
-Future<bool> login() async
-{
-  var result = await http.post(API_URL + '/auth/end', headers: {
-    'Token': getToken()
-  });
+Future<bool> login() async {
+  var result = await http
+      .post(Uri.parse(API_URL + '/auth/end'), headers: {'Token': getToken()});
 
   var json = parseResponse(result.body);
   await setUser(json['user']);
@@ -105,8 +94,7 @@ Future<bool> login() async
   return json['first_time'];
 }
 
-Future<void> cancelLogin() async
-{
+Future<void> cancelLogin() async {
   _token = '';
   _user = null;
   _logged = false;
@@ -115,29 +103,20 @@ Future<void> cancelLogin() async
   prefs.remove('token');
 }
 
-Future<void> setUser(dynamic user) async
-{
+Future<void> setUser(dynamic user) async {
   final prefs = await SharedPreferences.getInstance();
   prefs.setString('token', _token);
   print('Saving token : ' + _token);
 
-  _user = User(
-      user['username'],
-      user['first_name'],
-      user['last_name'],
-      user['email'],
-      user['promo'],
-      user['avatar']
-  );
+  _user = User(user['username'], user['first_name'], user['last_name'],
+      user['email'], user['promo'], user['avatar']);
 
   print("Logged in as '" + _user.firstName + " " + _user.lastName + "'");
 }
 
-Future<void> logout() async
-{
-  var result = await http.post(API_URL + '/auth/logout', headers: {
-    'Token': getToken()
-  });
+Future<void> logout() async {
+  var result = await http.post(Uri.parse(API_URL + '/auth/logout'),
+      headers: {'Token': getToken()});
 
   parseResponse(result.body);
 
@@ -149,8 +128,7 @@ Future<void> logout() async
   prefs.remove('token');
 }
 
-Future<void> loadUser() async
-{
+Future<void> loadUser() async {
   final prefs = await SharedPreferences.getInstance();
   if (!prefs.containsKey('user')) {
     return;
@@ -160,30 +138,51 @@ Future<void> loadUser() async
   setUser(jsonDecode(prefs.getString('user')));
 }
 
-Future<void> saveUser() async
-{
+Future<void> saveUser() async {
   final prefs = await SharedPreferences.getInstance();
-  prefs.setString("user", jsonEncode({
-    'username': _user.username,
-    'first_name': _user.firstName,
-    'last_name': _user.lastName,
-    'email': _user.email,
-    'promo': _user.promo,
-    'avatar': _user.avatar
-  }));
+  prefs.setString(
+      "user",
+      jsonEncode({
+        'username': _user.username,
+        'first_name': _user.firstName,
+        'last_name': _user.lastName,
+        'email': _user.email,
+        'promo': _user.promo,
+        'avatar': _user.avatar
+      }));
 }
 
-bool isLogged()
-{
+int getYearAtEpita() {
+  var now = DateTime.now();
+  var semesterOffset = now.month > 7 ? 0 : 1;
+  return 5 - int.parse("2026") + now.year + semesterOffset;
+}
+
+String getPromoName() {
+  switch (getYearAtEpita()) {
+    case 0:
+      return "SUP";
+    case 1:
+      return "SPE";
+    case 2:
+      return "ING1";
+    case 3:
+      return "ING2";
+    case 4:
+      return "ING3";
+    default:
+      return "BRO";
+  }
+}
+
+bool isLogged() {
   return _logged;
 }
 
-String getToken()
-{
+String getToken() {
   return _token;
 }
 
-User getUser()
-{
+User getUser() {
   return _user;
 }

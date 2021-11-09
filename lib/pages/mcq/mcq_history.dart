@@ -27,43 +27,38 @@ import 'package:epilyon/mcq.dart';
 import 'package:epilyon/pages/base.dart';
 import 'package:epilyon/pages/mcq/mcq_result.dart';
 
-class MCQHistoryPage extends StatefulWidget
-{
-  MCQHistoryPage({ Key key }) : super(key: key);
+class MCQHistoryPage extends StatefulWidget {
+  MCQHistoryPage({Key key}) : super(key: key);
 
   @override
   _MCQHistoryPageState createState() => _MCQHistoryPageState();
 }
 
-class _MCQHistoryPageState extends State<MCQHistoryPage>
-{
+class _MCQHistoryPageState extends State<MCQHistoryPage> {
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     DateTime now = DateTime.now();
-    DateTime firstSemester = DateTime(now.month < 8 ? now.year - 1 : now.year, 9, 1);
-    DateTime secondSemester = DateTime(now.month < 8 ? now.year : now.year + 1, 1, 1);
+    DateTime firstSemester =
+        DateTime(now.month < 8 ? now.year - 1 : now.year, 9, 1);
+    DateTime secondSemester =
+        DateTime(now.month < 8 ? now.year : now.year + 1, 1, 1);
 
-    // TODO: More dynamic way
-    var shift = getUser().promo == "2025" ? 0 : 2;
+    var semesterOffset = getYearAtEpita() * 2;
 
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10.0),
-        child: Column(
-          children: <Widget>[
-            now.month >= 1 && now.month <= 6
-                ? getSemester(2 + shift, secondSemester, now)
-                : Container(),
-            getSemester(1 + shift, firstSemester, secondSemester)
-          ]
-        ),
+        child: Column(children: <Widget>[
+          now.month >= 1 && now.month <= 6
+              ? getSemester(2 + semesterOffset, secondSemester, now)
+              : Container(),
+          getSemester(1 + semesterOffset, firstSemester, secondSemester)
+        ]),
       ),
     );
   }
 
-  Widget getSemester(int num, DateTime from, DateTime to)
-  {
+  Widget getSemester(int num, DateTime from, DateTime to) {
     DateFormat format = new DateFormat("dd MMMM", 'fr_FR');
 
     List<MCQ> mcqs = data.mcqHistory.where((mcq) {
@@ -76,64 +71,70 @@ class _MCQHistoryPageState extends State<MCQHistoryPage>
           title: "Semestre n°$num",
           bottomPadding: 10.0,
           child: Column(
-            children: mcqs.map((mcq) => Column(
-              children: <Widget>[
-                Divider(
-                  height: 0,
-                ),
-                buildEntry(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return BasePage(
-                          title: 'QCM du ' + format.format(mcq.date),
-                          child: MCQResultPage(mcq: mcq)
-                      );
-                    }));
-                  },
-                  isLast: mcq == mcqs[mcqs.length - 1],
-                  child: Padding(
-                    padding: EdgeInsets.only(bottom: mcq == mcqs[mcqs.length - 1] ? 1.5 : 0.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: mcqs
+                .map((mcq) => Column(
                       children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(left: 15.0),
-                          child: Text(format.format(mcq.date), style: TextStyle(fontSize: 17.0)),
+                        Divider(
+                          height: 0,
                         ),
-                        Row(
-                          children: <Widget>[
-                            Text(
-                              mcq.average.toStringAsFixed(1),
-                              style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.w500),
+                        buildEntry(
+                          onTap: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return BasePage(
+                                  title: 'QCM du ' + format.format(mcq.date),
+                                  child: MCQResultPage(mcq: mcq));
+                            }));
+                          },
+                          isLast: mcq == mcqs[mcqs.length - 1],
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                                bottom:
+                                    mcq == mcqs[mcqs.length - 1] ? 1.5 : 0.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 15.0),
+                                  child: Text(format.format(mcq.date),
+                                      style: TextStyle(fontSize: 17.0)),
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      mcq.average.toStringAsFixed(1),
+                                      style: TextStyle(
+                                          fontSize: 17.0,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    Text('/20',
+                                        style: TextStyle(fontSize: 17.0)),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 20.0, right: 10.0),
+                                      child: SvgPicture.asset(
+                                        'assets/icons/navigate_next.svg',
+                                        color: Colors.black,
+                                        width: 27.5,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
                             ),
-                            Text('/20', style: TextStyle(fontSize: 17.0)),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 20.0, right: 10.0),
-                              child: SvgPicture.asset(
-                                'assets/icons/navigate_next.svg',
-                                color: Colors.black,
-                                width: 27.5,
-                              ),
-                            ),
-                          ],
-                        )
+                          ),
+                        ),
                       ],
-                    ),
-                  ),
-                ),
-              ],
-            )).toList(),
-          )
-      ),
+                    ))
+                .toList(),
+          )),
     );
   }
 
-  Widget buildEntry({ Widget child, Function() onTap, bool isLast })
-  {
+  Widget buildEntry({Widget child, Function() onTap, bool isLast}) {
     var borderRadius = BorderRadius.only(
         bottomLeft: Radius.circular(isLast ? 3.0 : 0.0),
-        bottomRight: Radius.circular(isLast ? 3.0 : 0.0)
-    );
+        bottomRight: Radius.circular(isLast ? 3.0 : 0.0));
 
     return Material(
       elevation: 0.0,

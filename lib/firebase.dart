@@ -1,49 +1,32 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
 // TODO: Impl this and open right view depending on notification
 
 bool _initialized = false;
 
-void initFirebase()
-{
+void initFirebase() {
   if (_initialized) {
     return;
   }
 
   _initialized = true;
 
-  _firebaseMessaging.configure(
-    onMessage: (Map<String, dynamic> message) async {
-      // {notification: {title: this is a title, body: this is a body}, data: {status: done, id: 1, color: #ff0000, click_action: FLUTTER_NOTIFICATION_CLICK}}
-      print("onMessage: $message");
-    },
-    onBackgroundMessage: handleBackgroundMessage,
-    onLaunch: (Map<String, dynamic> message) async {
-      print("onLaunch: $message");
-    },
-    onResume: (Map<String, dynamic> message) async {
-      // {notification: {}, data: {collapse_key: com.litarvan.epilyon, color: #ff0000, google.original_priority: high, google.sent_time: 1581341404242, google.delivered_priority: high, google.ttl: 2419200, from: 472301904711, id: 1, click_action: FLUTTER_NOTIFICATION_CLICK, google.message_id: 0:1581341404252844%4fecd5444fecd544, status: done}}
-      print("onResume: $message");
-    },
-  );
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    // {notification: {title: this is a title, body: this is a body}, data: {status: done, id: 1, color: #ff0000, click_action: FLUTTER_NOTIFICATION_CLICK}}
+    print("onMessage: $message");
+  });
+  FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
 }
 
-Future<dynamic> handleBackgroundMessage(Map<String, dynamic> message) async {
-  if (message.containsKey('data')) {
-    // Handle data message
-    final dynamic data = message['data'];
-    print('Data : ');
-    print(data);
-  }
+Future<dynamic> handleBackgroundMessage(RemoteMessage message) async {
+  // Handle data message
+  print('Data : ');
+  print(message.data);
 
-  if (message.containsKey('notification')) {
-    // Handle notification message
-    final dynamic notification = message['notification'];
-    print('Notification : ');
-    print(notification);
-  }
+  print('Notification : ');
+  print(message.notification);
 
   // Or do other work.
   return "";
