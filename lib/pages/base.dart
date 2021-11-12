@@ -26,14 +26,14 @@ double barHeight = 54.0;
 
 class BasePage extends StatefulWidget
 {
-  final String title;
-  final Widget drawer;
-  final Widget bottomNav;
+  final String? title;
+  final Widget? drawer;
+  final Widget? bottomNav;
   final bool fixed;
-  final Widget child;
+  final Widget? child;
 
   BasePage({
-    Key key,
+    Key? key,
     this.title,
     this.drawer,
     this.bottomNav,
@@ -51,7 +51,7 @@ class _BasePageState extends State<BasePage>
   Widget build(BuildContext context)
   {
     return Scaffold(
-        appBar: buildAppBar(context, barHeight),
+        appBar: buildAppBar(context, barHeight) as PreferredSizeWidget?,
         drawer: widget.drawer,
         bottomNavigationBar: widget.bottomNav,
         body: EpiContent(
@@ -75,7 +75,7 @@ class _BasePageState extends State<BasePage>
         ]),
         child: AppBar(
           elevation: 0.0,
-          title: Text(widget.title),
+          title: Text(widget.title!),
           titleSpacing: 3.0,
           actions: widget.drawer == null || !isLogged() ? null : <Widget>[
             RefreshButton()

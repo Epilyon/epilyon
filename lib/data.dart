@@ -29,17 +29,17 @@ import 'package:epilyon/mimos.dart';
 import 'package:epilyon/mcq.dart';
 
 class UserData {
-  Delegate admin;
-  List<Delegate> delegates;
-  List<MCQ> mcqHistory;
-  List<Mimos> mimos;
-  NextMCQ nextMcq;
+  Delegate? admin;
+  List<Delegate>? delegates;
+  List<MCQ>? mcqHistory;
+  List<Mimos>? mimos;
+  NextMCQ? nextMcq;
 
   UserData(
       {this.admin, this.delegates, this.mcqHistory, this.mimos, this.nextMcq});
 }
 
-UserData data;
+late UserData data;
 
 DateFormat mcqDateFormat = new DateFormat('yyyy-MM-dd');
 DateFormat mimosDateFormat = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -54,7 +54,7 @@ Future<void> pingServer() async {
 
 Future<void> fetchData() async {
   var result = await http
-      .get(Uri.parse(API_URL + '/data/get'), headers: {'Token': getToken()});
+      .get(Uri.parse(API_URL + '/data/get'), headers: {'Token': getToken()!});
 
   data = parseData(parseResponse(utf8.decode(result.bodyBytes))['data']);
   await save();
@@ -62,7 +62,7 @@ Future<void> fetchData() async {
 
 Future<void> forceRefresh() async {
   var result = await http.post(Uri.parse(API_URL + '/data/refresh'),
-      headers: {'Token': getToken()});
+      headers: {'Token': getToken()!});
 
   parseResponse(result.body);
 }
@@ -70,12 +70,12 @@ Future<void> forceRefresh() async {
 // TODO: Rework this part SOON
 
 UserData parseData(dynamic data) {
-  List<Delegate> delegates = data['delegates'].map<Delegate>((delegate) {
+  List<Delegate>? delegates = data['delegates'].map<Delegate>((delegate) {
     return Delegate(delegate['name'], delegate['email']);
   }).toList();
 
   List<MCQ> mcqs = data['mcq_history'].map<MCQ>((mcq) {
-    List<MCQGrade> grades = mcq['grades']
+    List<MCQGrade>? grades = mcq['grades']
         .map<MCQGrade>((grade) => MCQGrade(
             grade['subject'],
             grade['points']
@@ -89,13 +89,13 @@ UserData parseData(dynamic data) {
 
   mcqs.sort((a, b) => -a.date.compareTo(b.date));
 
-  List<Mimos> mimos = data['mimos']
+  List<Mimos>? mimos = data['mimos']
       .map<Mimos>((mimos) => Mimos(mimos['subject'], mimos['number'],
           mimos['title'], mimosDateFormat.parse(mimos['date'])))
       .toList();
 
   var next = data['next_mcq'];
-  NextMCQ nextMcq;
+  NextMCQ? nextMcq;
   if (next != null) {
     nextMcq = NextMCQ(
         next['skipped'],
@@ -127,19 +127,19 @@ Future<void> load() async {
   NextMCQ nextMcq;
 
   if (prefs.containsKey('admin')) {
-    var json = jsonDecode(prefs.getString('admin'));
+    var json = jsonDecode(prefs.getString('admin')!);
     admin = Delegate(json['name'], json['email']);
   }
 
   if (prefs.containsKey('delegates')) {
-    for (var delegate in prefs.getStringList('delegates')) {
+    for (var delegate in prefs.getStringList('delegates')!) {
       var json = jsonDecode(delegate);
       delegates.add(Delegate(json['name'], json['email']));
     }
   }
 
   if (prefs.containsKey('mcqs')) {
-    for (var mcq in prefs.getStringList('mcqs')) {
+    for (var mcq in prefs.getStringList('mcqs')!) {
       var json = jsonDecode(mcq);
 
       mcqs.add(MCQ(
@@ -152,7 +152,7 @@ Future<void> load() async {
   }
 
   if (prefs.containsKey('mimos')) {
-    for (var m in prefs.getStringList('mimos')) {
+    for (var m in prefs.getStringList('mimos')!) {
       var json = jsonDecode(m);
 
       mimos.add(Mimos(json['subject'], json['number'], json['title'],
@@ -161,7 +161,7 @@ Future<void> load() async {
   }
 
   if (prefs.containsKey('nextMcq')) {
-    var json = jsonDecode(prefs.getString("nextMcq"));
+    var json = jsonDecode(prefs.getString("nextMcq")!);
 
     if (json != null) {
       nextMcq = NextMCQ(
@@ -185,22 +185,22 @@ Future<void> save() async {
   final prefs = await SharedPreferences.getInstance();
 
   prefs.setString("admin",
-      jsonEncode({'name': data.admin.name, 'email': data.admin.email}));
+      jsonEncode({'name': data.admin!.name, 'email': data.admin!.email}));
 
   prefs.setStringList(
       'delegates',
-      data.delegates
+      data.delegates!
           .map((delegate) =>
               jsonEncode({'name': delegate.name, 'email': delegate.email}))
           .toList());
 
   prefs.setStringList(
       'mcqs',
-      data.mcqHistory
+      data.mcqHistory!
           .map((mcq) => jsonEncode({
                 'date': mcq.date.microsecondsSinceEpoch,
                 'average': mcq.average,
-                'grades': mcq.grades
+                'grades': mcq.grades!
                     .map((grade) =>
                         {'subject': grade.subject, 'grade': grade.grade})
                     .toList()
@@ -209,24 +209,24 @@ Future<void> save() async {
 
   prefs.setStringList(
       'mimos',
-      data.mimos
+      data.mimos!
           .map((mimos) => jsonEncode({
                 'subject': mimos.subject,
                 'number': mimos.number,
                 'title': mimos.title,
-                'date': mimosDateFormat.format(mimos.date)
+                'date': mimosDateFormat.format(mimos.date!)
               }))
           .toList());
 
-  Map<String, Object> next;
+  Map<String, Object?>? next;
   if (data.nextMcq != null) {
     next = {
-      'skipped': data.nextMcq.skipped,
-      'at': mimosDateFormat.format(data.nextMcq.at),
-      'revisions': data.nextMcq.revisions
+      'skipped': data.nextMcq!.skipped,
+      'at': mimosDateFormat.format(data.nextMcq!.at),
+      'revisions': data.nextMcq!.revisions!
           .map((r) => {'subject': r.subject, 'work': r.work})
           .toList(),
-      'lastEditor': data.nextMcq.lastEditor
+      'lastEditor': data.nextMcq!.lastEditor
     };
   }
 

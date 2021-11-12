@@ -32,7 +32,7 @@ Future<dynamic> handleBackgroundMessage(RemoteMessage message) async {
   return "";
 }
 
-Future<String> getDeviceToken() async {
+Future<String?> getDeviceToken() async {
   try {
     return await _firebaseMessaging.getToken();
   } catch (e) {

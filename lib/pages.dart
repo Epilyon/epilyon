@@ -83,19 +83,19 @@ final List<EpiPage> pages = [
 
 class EpiPage {
   String title;
-  String tabTitle;
+  String? tabTitle;
   String icon;
-  Widget page;
+  Widget? page;
   List<EpiPage> tabs;
-  String action;
+  String? action;
   int tabIndex;
 
-  bool Function() onlyIf;
+  bool Function()? onlyIf;
 
   EpiPage(
-      {@required this.title,
+      {required this.title,
       this.tabTitle,
-      @required this.icon,
+      required this.icon,
       this.page,
       this.tabs = const [],
       this.action,

@@ -23,9 +23,9 @@ import 'package:epilyon/data.dart';
 import 'package:epilyon/mcq.dart';
 
 class MCQResultPage extends StatefulWidget {
-  final MCQ mcq;
+  final MCQ? mcq;
 
-  MCQResultPage({Key key, this.mcq}) : super(key: key);
+  MCQResultPage({Key? key, this.mcq}) : super(key: key);
 
   @override
   _MCQResultPageState createState() => _MCQResultPageState();
@@ -37,7 +37,7 @@ class _MCQResultPageState extends State<MCQResultPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.mcq == null && data.mcqHistory.length == 0) {
+    if (widget.mcq == null && data.mcqHistory!.length == 0) {
       return Center(
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -50,13 +50,13 @@ class _MCQResultPageState extends State<MCQResultPage> {
       );
     }
 
-    MCQ mcq = widget.mcq != null ? widget.mcq : data.mcqHistory[0];
-    MCQ previous;
+    MCQ? mcq = widget.mcq != null ? widget.mcq : data.mcqHistory![0];
+    MCQ? previous;
 
-    for (int i = 0; i < data.mcqHistory.length; i++) {
-      if (data.mcqHistory[i] == mcq) {
-        if (i + 1 < data.mcqHistory.length) {
-          previous = data.mcqHistory[i + 1];
+    for (int i = 0; i < data.mcqHistory!.length; i++) {
+      if (data.mcqHistory![i] == mcq) {
+        if (i + 1 < data.mcqHistory!.length) {
+          previous = data.mcqHistory![i + 1];
         }
 
         break;
@@ -71,13 +71,13 @@ class _MCQResultPageState extends State<MCQResultPage> {
         child: Column(
           children: <Widget>[
             Text(
-              'QCM du ' + format.format(mcq.date),
+              'QCM du ' + format.format(mcq!.date),
               style: TextStyle(fontSize: 16),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
               child: Text(
-                mcq.average.toStringAsFixed(1) + '/20',
+                mcq.average!.toStringAsFixed(1) + '/20',
                 style: TextStyle(fontSize: 52, fontWeight: FontWeight.bold),
               ),
             ),
@@ -92,7 +92,7 @@ class _MCQResultPageState extends State<MCQResultPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        compare(mcq.average, previous.average),
+                        compare(mcq.average!, previous.average!),
                         Text('par rapport au précédent',
                             style: TextStyle(fontSize: 18.0))
                       ],
@@ -106,10 +106,10 @@ class _MCQResultPageState extends State<MCQResultPage> {
                     padding: const EdgeInsets.only(
                         left: 25.0, bottom: 10.0, right: 22.5),
                     child: Column(
-                      children: mcq.grades.map<Widget>((grade) {
-                        MCQGrade last = previous == null
+                      children: mcq.grades!.map<Widget>((grade) {
+                        MCQGrade? last = previous == null
                             ? null
-                            : previous.grades.firstWhere(
+                            : previous.grades!.firstWhere(
                                 (g) => grade.subject == g.subject,
                                 orElse: () => grade);
 
@@ -119,7 +119,7 @@ class _MCQResultPageState extends State<MCQResultPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Text(
-                                grade.subject,
+                                grade.subject!,
                                 style: TextStyle(
                                     fontSize: 17, fontWeight: FontWeight.w500),
                               ),
@@ -131,20 +131,20 @@ class _MCQResultPageState extends State<MCQResultPage> {
                                           padding: EdgeInsets.only(
                                               right: grade.grade == 10.0
                                                   ? 4.0
-                                                  : (grade.grade < 0.0
+                                                  : (grade.grade! < 0.0
                                                       ? 8.25
                                                       : 12.75)),
                                           child:
-                                              compare(grade.grade, last.grade),
+                                              compare(grade.grade!, last!.grade!),
                                         ),
                                   Row(
                                     children: <Widget>[
                                       Text(
-                                        grade.grade.toStringAsFixed(1),
+                                        grade.grade!.toStringAsFixed(1),
                                         style: TextStyle(
                                             color: grade.grade == 10.0
                                                 ? greenGrade
-                                                : (grade.grade <= 0.0
+                                                : (grade.grade! <= 0.0
                                                     ? redGrade
                                                     : null),
                                             fontSize: 17,

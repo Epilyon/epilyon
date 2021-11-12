@@ -24,7 +24,7 @@ import 'package:epilyon/pages/ms_login.dart';
 
 class LoginPage extends StatefulWidget
 {
-  LoginPage({ Key key }) : super(key: key);
+  LoginPage({ Key? key }) : super(key: key);
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -32,7 +32,7 @@ class LoginPage extends StatefulWidget
 
 class _LoginPageState extends State<LoginPage>
 {
-  BuildContext _dialogContext;
+  BuildContext? _dialogContext;
 
   void _onConnectPress(BuildContext context)
   {
@@ -49,7 +49,7 @@ class _LoginPageState extends State<LoginPage>
         return;
       }
 
-      Navigator.pop(_dialogContext);
+      Navigator.pop(_dialogContext!);
       Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => MSLoginPage())
@@ -62,7 +62,7 @@ class _LoginPageState extends State<LoginPage>
       print('Error during session creation : ' + e.toString());
       print(trace);
 
-      Navigator.pop(_dialogContext);
+      Navigator.pop(_dialogContext!);
       showErrorDialog(
         context,
         title: 'Erreur',

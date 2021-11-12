@@ -44,7 +44,7 @@ android {
 
     defaultConfig {
         applicationId "com.litarvan.epilyon"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 28
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

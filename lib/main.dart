@@ -17,6 +17,7 @@
  */
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'package:epilyon/data.dart';
@@ -26,25 +27,24 @@ import 'package:epilyon/pages/main.dart';
 
 const VERSION = 'v0.1.0';
 
-void main()
-{
+void main() {
   initializeDateFormatting('fr_FR');
 
   WidgetsFlutterBinding.ensureInitialized();
+
   load().then((_) async {
+    await Firebase.initializeApp();
     runApp(MyApp(await canRefresh()));
   });
 }
 
-class MyApp extends StatelessWidget
-{
+class MyApp extends StatelessWidget {
   final bool canRefresh;
 
   MyApp(this.canRefresh);
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -53,17 +53,17 @@ class MyApp extends StatelessWidget
     return MaterialApp(
       title: 'Epilyon',
       theme: ThemeData(
-        // TODO: Custom theming
-        primaryColor: Color(0xFF027CFF), // 0xFF8643e6
-        canvasColor: Color(0xFFF5F7F9),
-        fontFamily: 'Roboto',
-        appBarTheme: AppBarTheme(
-          textTheme: TextTheme(
-              headline6: TextStyle(fontFamily: 'LatoE', fontSize: 19, fontWeight: FontWeight.w600)
-          ),
-          elevation: 0
-        )
-      ),
+          // TODO: Custom theming
+          primaryColor: Color(0xFF027CFF), // 0xFF8643e6
+          canvasColor: Color(0xFFF5F7F9),
+          fontFamily: 'Roboto',
+          appBarTheme: AppBarTheme(
+              textTheme: TextTheme(
+                  headline6: TextStyle(
+                      fontFamily: 'LatoE',
+                      fontSize: 19,
+                      fontWeight: FontWeight.w600)),
+              elevation: 0)),
       home: canRefresh ? MainPage() : LoginPage(),
     );
   }

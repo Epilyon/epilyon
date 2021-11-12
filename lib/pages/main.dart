@@ -32,7 +32,7 @@ void pushMain(BuildContext context) {
 }
 
 class MainPage extends StatefulWidget {
-  MainPage({Key key}) : super(key: key);
+  MainPage({Key? key}) : super(key: key);
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -40,8 +40,8 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   // TODO: Page switching animation ?
-  EpiPage selectedPage;
-  BuildContext _dialogContext;
+  EpiPage? selectedPage;
+  BuildContext? _dialogContext;
 
   @override
   void initState() {
@@ -75,7 +75,7 @@ class _MainPageState extends State<MainPage> {
           content: "Erreur lors de la déconnexion : " + e.toString());
     }).whenComplete(() {
       if (_dialogContext != null) {
-        Navigator.pop(_dialogContext);
+        Navigator.pop(_dialogContext!);
       }
 
       Navigator.pushReplacement(
@@ -87,27 +87,27 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     Color primary = Theme.of(context).primaryColor;
 
-    Widget content = selectedPage.tabs.length > 0
-        ? selectedPage.tabs[selectedPage.tabIndex].page
-        : selectedPage.page;
+    Widget? content = selectedPage!.tabs.length > 0
+        ? selectedPage!.tabs[selectedPage!.tabIndex].page
+        : selectedPage!.page;
 
     return WillPopScope(
       onWillPop: () async => false,
       child: BasePage(
-        title: selectedPage.tabs.length > 0
-            ? selectedPage.tabs[selectedPage.tabIndex].title
-            : selectedPage.title,
+        title: selectedPage!.tabs.length > 0
+            ? selectedPage!.tabs[selectedPage!.tabIndex].title
+            : selectedPage!.title,
         drawer: buildDrawer(context),
-        bottomNav: selectedPage.tabs.length > 0
+        bottomNav: selectedPage!.tabs.length > 0
             ? BottomNavigationBar(
-                currentIndex: selectedPage.tabIndex,
+                currentIndex: selectedPage!.tabIndex,
                 elevation: 20.0,
                 onTap: (tab) => setState(() {
-                  if (selectedPage.tabs[tab].page != null) {
-                    selectedPage.tabIndex = tab;
+                  if (selectedPage!.tabs[tab].page != null) {
+                    selectedPage!.tabIndex = tab;
                   }
                 }),
-                items: selectedPage.tabs.map((page) {
+                items: selectedPage!.tabs.map((page) {
                   bool selected = content == page.page;
 
                   return BottomNavigationBarItem(
@@ -117,7 +117,7 @@ class _MainPageState extends State<MainPage> {
                         color: selected ? primary : Color(0xFF999999),
                       ), // TODO: Better way (color) ?
                       title: Text(
-                          page.tabTitle != null ? page.tabTitle : page.title));
+                          page.tabTitle != null ? page.tabTitle! : page.title));
                 }).toList(),
               )
             : null,
@@ -127,7 +127,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   void rebuild() {
-    ElementVisitor visitor;
+    late ElementVisitor visitor;
     visitor = (child) {
       if (child.widget is MainPage) {
         child.markNeedsBuild();
@@ -150,7 +150,7 @@ class _MainPageState extends State<MainPage> {
     Color primary = Theme.of(context).primaryColor;
     MediaQueryData media = MediaQuery.of(context);
 
-    User user = getUser();
+    User user = getUser()!;
     String promoName = getPromoName();
 
     return Theme(
@@ -297,7 +297,7 @@ class _MainPageState extends State<MainPage> {
                 child: Wrap(
                     runSpacing: 10.0,
                     children: pages
-                        .where((page) => page.onlyIf == null || page.onlyIf())
+                        .where((page) => page.onlyIf == null || page.onlyIf!())
                         .map((page) {
                           bool selected = page == selectedPage;
                           BorderRadius borderRadius = BorderRadius.only(
@@ -375,5 +375,5 @@ class _MainPageState extends State<MainPage> {
 }
 
 void rebuildAll(BuildContext context) {
-  context.findAncestorStateOfType<_MainPageState>().rebuild();
+  context.findAncestorStateOfType<_MainPageState>()!.rebuild();
 }

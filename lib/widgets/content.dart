@@ -26,8 +26,8 @@ import 'package:epilyon/widgets/dialogs.dart';
 
 class EpiContent extends StatefulWidget
 {
-  final Widget child;
-  final bool fixed;
+  final Widget? child;
+  final bool? fixed;
   final bool doRefresh;
 
   EpiContent({ this.child, this.fixed, this.doRefresh = false });
@@ -38,7 +38,7 @@ class EpiContent extends StatefulWidget
 
 class EpiContentState extends State<EpiContent>
 {
-  BuildContext _dialogContext;
+  BuildContext? _dialogContext;
 
   @override
   void initState()
@@ -47,7 +47,7 @@ class EpiContentState extends State<EpiContent>
 
     canRefresh().then((canRefresh) {
       if (widget.doRefresh && canRefresh) {
-        SchedulerBinding.instance.addPostFrameCallback((_) => doRefresh());
+        SchedulerBinding.instance!.addPostFrameCallback((_) => doRefresh());
       }
     });
   }
@@ -129,7 +129,7 @@ class EpiContentState extends State<EpiContent>
         return;
       }
 
-      Navigator.pop(_dialogContext);
+      Navigator.pop(_dialogContext!);
       Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => MSLoginPage())
@@ -142,7 +142,7 @@ class EpiContentState extends State<EpiContent>
       print('Error during session creation : ' + e.toString());
       print(trace);
 
-      Navigator.pop(_dialogContext);
+      Navigator.pop(_dialogContext!);
       showErrorDialog(
           context,
           title: 'Erreur',
@@ -154,7 +154,7 @@ class EpiContentState extends State<EpiContent>
   @override
   Widget build(BuildContext context)
   {
-    return widget.fixed ? widget.child : SingleChildScrollView(
+    return widget.fixed! ? widget.child! : SingleChildScrollView(
       child: widget.child,
     );
   }

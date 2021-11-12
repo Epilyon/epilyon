@@ -25,7 +25,7 @@ import 'package:epilyon/widgets/card.dart';
 
 class AboutPage extends StatefulWidget
 {
-  AboutPage({ Key key }) : super(key: key);
+  AboutPage({ Key? key }) : super(key: key);
 
   @override
   _AboutPageState createState() => _AboutPageState();

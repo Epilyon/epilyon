@@ -28,7 +28,7 @@ import 'package:epilyon/pages/base.dart';
 import 'package:epilyon/pages/mcq/mcq_result.dart';
 
 class MCQHistoryPage extends StatefulWidget {
-  MCQHistoryPage({Key key}) : super(key: key);
+  MCQHistoryPage({Key? key}) : super(key: key);
 
   @override
   _MCQHistoryPageState createState() => _MCQHistoryPageState();
@@ -61,7 +61,7 @@ class _MCQHistoryPageState extends State<MCQHistoryPage> {
   Widget getSemester(int num, DateTime from, DateTime to) {
     DateFormat format = new DateFormat("dd MMMM", 'fr_FR');
 
-    List<MCQ> mcqs = data.mcqHistory.where((mcq) {
+    List<MCQ> mcqs = data.mcqHistory!.where((mcq) {
       return mcq.date.compareTo(from) >= 0 && mcq.date.compareTo(to) < 0;
     }).toList();
 
@@ -102,7 +102,7 @@ class _MCQHistoryPageState extends State<MCQHistoryPage> {
                                 Row(
                                   children: <Widget>[
                                     Text(
-                                      mcq.average.toStringAsFixed(1),
+                                      mcq.average!.toStringAsFixed(1),
                                       style: TextStyle(
                                           fontSize: 17.0,
                                           fontWeight: FontWeight.w500),
@@ -131,7 +131,7 @@ class _MCQHistoryPageState extends State<MCQHistoryPage> {
     );
   }
 
-  Widget buildEntry({Widget child, Function() onTap, bool isLast}) {
+  Widget buildEntry({Widget? child, Function()? onTap, required bool isLast}) {
     var borderRadius = BorderRadius.only(
         bottomLeft: Radius.circular(isLast ? 3.0 : 0.0),
         bottomRight: Radius.circular(isLast ? 3.0 : 0.0));

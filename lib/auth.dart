@@ -25,7 +25,7 @@ import 'package:epilyon/api.dart';
 import 'package:epilyon/firebase.dart';
 
 String _token = "";
-User _user;
+User? _user;
 bool _logged = false;
 
 class User {
@@ -83,9 +83,9 @@ Future<void> createSession() async {
   _token = parseResponse(result.body)['token'];
 }
 
-Future<bool> login() async {
+Future<bool?> login() async {
   var result = await http
-      .post(Uri.parse(API_URL + '/auth/end'), headers: {'Token': getToken()});
+      .post(Uri.parse(API_URL + '/auth/end'), headers: {'Token': getToken()!});
 
   var json = parseResponse(result.body);
   await setUser(json['user']);
@@ -111,12 +111,12 @@ Future<void> setUser(dynamic user) async {
   _user = User(user['username'], user['first_name'], user['last_name'],
       user['email'], user['promo'], user['avatar']);
 
-  print("Logged in as '" + _user.firstName + " " + _user.lastName + "'");
+  print("Logged in as '" + _user!.firstName + " " + _user!.lastName + "'");
 }
 
 Future<void> logout() async {
   var result = await http.post(Uri.parse(API_URL + '/auth/logout'),
-      headers: {'Token': getToken()});
+      headers: {'Token': getToken()!});
 
   parseResponse(result.body);
 
@@ -134,8 +134,8 @@ Future<void> loadUser() async {
     return;
   }
 
-  _token = prefs.getString("token");
-  setUser(jsonDecode(prefs.getString('user')));
+  _token = prefs.getString("token")!;
+  setUser(jsonDecode(prefs.getString('user')!));
 }
 
 Future<void> saveUser() async {
@@ -143,12 +143,12 @@ Future<void> saveUser() async {
   prefs.setString(
       "user",
       jsonEncode({
-        'username': _user.username,
-        'first_name': _user.firstName,
-        'last_name': _user.lastName,
-        'email': _user.email,
-        'promo': _user.promo,
-        'avatar': _user.avatar
+        'username': _user!.username,
+        'first_name': _user!.firstName,
+        'last_name': _user!.lastName,
+        'email': _user!.email,
+        'promo': _user!.promo,
+        'avatar': _user!.avatar
       }));
 }
 
@@ -179,10 +179,10 @@ bool isLogged() {
   return _logged;
 }
 
-String getToken() {
+String? getToken() {
   return _token;
 }
 
-User getUser() {
+User? getUser() {
   return _user;
 }

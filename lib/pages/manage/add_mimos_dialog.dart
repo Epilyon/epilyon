@@ -22,18 +22,16 @@ import 'package:epilyon/widgets/button.dart';
 import 'package:epilyon/widgets/dropdown.dart';
 import 'package:epilyon/widgets/text_form_field.dart';
 
-class AddMimosDialog extends StatefulWidget
-{
+class AddMimosDialog extends StatefulWidget {
   final void Function(Mimos) callback;
 
-  AddMimosDialog(this.callback, { Key key }) : super(key: key);
+  AddMimosDialog(this.callback, {Key? key}) : super(key: key);
 
   @override
   _AddMimosDialogState createState() => _AddMimosDialogState();
 }
 
-class _AddMimosDialogState extends State<AddMimosDialog>
-{
+class _AddMimosDialogState extends State<AddMimosDialog> {
   final _formKey = GlobalKey<FormState>();
 
   var subject = 'Algo';
@@ -41,33 +39,23 @@ class _AddMimosDialogState extends State<AddMimosDialog>
   var titleController = TextEditingController();
   var dateController = TextEditingController();
 
-  DateTime date;
+  DateTime? date;
 
-  void submit()
-  {
-    if (_formKey.currentState.validate()) {
+  void submit() {
+    if (_formKey.currentState!.validate()) {
       Navigator.of(context).pop();
 
-      widget.callback(Mimos(
-          subject,
-          int.parse(numberController.text),
-          titleController.text,
-          date
-      ));
+      widget.callback(Mimos(subject, int.parse(numberController.text),
+          titleController.text, date));
     }
   }
 
-  void dateDialog() async
-  {
+  void dateDialog() async {
     var now = DateTime.now();
     var last = new DateTime(now.year + (now.month > 8 ? 1 : 0), 7, 7);
 
     var date = await showDatePicker(
-      context: context,
-      firstDate: now,
-      initialDate: now,
-      lastDate: last
-    );
+        context: context, firstDate: now, initialDate: now, lastDate: last);
 
     if (date == null) {
       return;
@@ -80,12 +68,12 @@ class _AddMimosDialogState extends State<AddMimosDialog>
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     return SimpleDialog(
       title: Text('Ajouter un MiMos'),
       titlePadding: EdgeInsets.only(top: 20.0, left: 20.0, bottom: 12.5),
-      contentPadding: EdgeInsets.only(bottom: 15.0, left: 15.0, right: 15.0, top: 7.5),
+      contentPadding:
+          EdgeInsets.only(bottom: 15.0, left: 15.0, right: 15.0, top: 7.5),
       children: <Widget>[
         Form(
             key: _formKey,
@@ -94,15 +82,21 @@ class _AddMimosDialogState extends State<AddMimosDialog>
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5.0),
-                    child: Text('Matière', style: TextStyle(color: Color(0xFF555555)),),
+                    child: Text(
+                      'Matière',
+                      style: TextStyle(color: Color(0xFF555555)),
+                    ),
                   ),
                   EpiDropdown(
                     values: ['Algo', 'Maths', 'Physique', 'Élec'],
-                    onChanged: (value) => subject = value,
+                    onChanged: (value) => subject = value!,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5.0, top: 15.0),
-                    child: Text('Numéro', style: TextStyle(color: Color(0xFF555555)),),
+                    child: Text(
+                      'Numéro',
+                      style: TextStyle(color: Color(0xFF555555)),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
@@ -114,7 +108,10 @@ class _AddMimosDialogState extends State<AddMimosDialog>
                   ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5.0, top: 5.0),
-                    child: Text('Titre', style: TextStyle(color: Color(0xFF555555)),),
+                    child: Text(
+                      'Titre',
+                      style: TextStyle(color: Color(0xFF555555)),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
@@ -125,7 +122,10 @@ class _AddMimosDialogState extends State<AddMimosDialog>
                   ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5.0, top: 5.0),
-                    child: Text('Pour le', style: TextStyle(color: Color(0xFF555555)),),
+                    child: Text(
+                      'Pour le',
+                      style: TextStyle(color: Color(0xFF555555)),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 22.5),
@@ -135,13 +135,8 @@ class _AddMimosDialogState extends State<AddMimosDialog>
                       onTap: dateDialog,
                     ),
                   ),
-                  EpiButton(
-                      text: 'Ajouter',
-                      onPressed: submit
-                  )
-                ]
-            )
-        )
+                  EpiButton(text: 'Ajouter', onPressed: submit)
+                ]))
       ],
     );
   }

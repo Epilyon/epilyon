@@ -26,7 +26,7 @@ import 'package:epilyon/widgets/card.dart';
 import 'package:epilyon/widgets/dialogs.dart';
 
 class ManagePage extends StatefulWidget {
-  ManagePage({Key key}) : super(key: key);
+  ManagePage({Key? key}) : super(key: key);
 
   @override
   _ManagePageState createState() => _ManagePageState();
@@ -67,9 +67,9 @@ class _ManagePageState extends State<ManagePage> {
     addDelegate(email).then((name) {
       Navigator.of(context).pop();
 
-      if (!delegates.any((del) => del.email == email)) {
+      if (!delegates!.any((del) => del.email == email)) {
         setState(() {
-          delegates.add(new Delegate(name, email));
+          delegates!.add(new Delegate(name, email));
         });
       }
     }).catchError((err) {
@@ -87,7 +87,7 @@ class _ManagePageState extends State<ManagePage> {
   void doRemoveDelegate(Delegate delegate) {
     removeDelegate(delegate.email).then((_) {
       setState(() {
-        delegates.removeWhere((del) => del.email == delegate.email);
+        delegates!.removeWhere((del) => del.email == delegate.email);
       });
     }).catchError((err) {
       if (!(err is String)) {
@@ -117,7 +117,7 @@ class _ManagePageState extends State<ManagePage> {
 
   @override
   Widget build(BuildContext context) {
-    var user = getUser();
+    var user = getUser()!;
 
     return Center(
         child: Column(
@@ -144,7 +144,7 @@ class _ManagePageState extends State<ManagePage> {
         !isUserAdmin()
             ? Padding(
                 padding: const EdgeInsets.only(bottom: 30.0),
-                child: Text('Administrateur  : ' + data.admin.name,
+                child: Text('Administrateur  : ' + data.admin!.name!,
                     style:
                         TextStyle(fontSize: 17.0, fontStyle: FontStyle.italic)),
               )
@@ -153,7 +153,7 @@ class _ManagePageState extends State<ManagePage> {
             title: 'Délégués',
             bottomPadding: 10.0,
             child: Column(
-              children: delegates
+              children: delegates!
                   .map<Widget>((delegate) => Column(
                         children: <Widget>[
                           Divider(height: 0),
@@ -164,7 +164,7 @@ class _ManagePageState extends State<ManagePage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
                                 Text(
-                                  delegate.name,
+                                  delegate.name!,
                                   style: TextStyle(fontSize: 16.0),
                                 ),
                                 isUserAdmin()

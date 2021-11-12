@@ -25,47 +25,38 @@ import 'package:epilyon/data.dart';
 import 'package:epilyon/auth.dart';
 import 'package:epilyon/api_url.dart';
 
-class MSLoginPage extends StatefulWidget
-{
-  MSLoginPage({ Key key }) : super(key: key);
+class MSLoginPage extends StatefulWidget {
+  MSLoginPage({Key? key}) : super(key: key);
 
   @override
   _MSLoginPageState createState() => _MSLoginPageState();
 }
 
-class _MSLoginPageState extends State<MSLoginPage>
-{
-  BuildContext _dialogContext;
+class _MSLoginPageState extends State<MSLoginPage> {
+  BuildContext? _dialogContext;
 
-  Future _onWebViewCreated(WebViewController controller) async
-  {
-    controller.loadUrl(API_URL + "/auth/login", headers: {
-      "Token": getToken()
-    });
+  Future _onWebViewCreated(WebViewController controller) async {
+    controller
+        .loadUrl(API_URL + "/auth/login", headers: {"Token": getToken()!});
   }
 
-  void _onChannelMessage(BuildContext context, JavascriptMessage message)
-  {
+  void _onChannelMessage(BuildContext context, JavascriptMessage message) {
     if (message.message != 'Close') {
       return;
     }
 
-    showLoadingDialog(
-        context,
+    showLoadingDialog(context,
         title: 'Chargement',
         content: 'Lecture des données...',
-        onContextUpdate: (ctx) => _dialogContext = ctx
-    );
+        onContextUpdate: (ctx) => _dialogContext = ctx);
 
     login().then((first) async {
-      if (first) {
-        Navigator.pop(_dialogContext);
-        showLoadingDialog(
-            context,
+      if (first!) {
+        Navigator.pop(_dialogContext!);
+        showLoadingDialog(context,
             title: 'Première connexion',
             content: 'Récupération des informations...',
-            onContextUpdate: (ctx) => _dialogContext = ctx
-        );
+            onContextUpdate: (ctx) => _dialogContext = ctx);
 
         await forceRefresh();
       }
@@ -76,7 +67,7 @@ class _MSLoginPageState extends State<MSLoginPage>
         return;
       }
 
-      Navigator.pop(_dialogContext);
+      Navigator.pop(_dialogContext!);
       pushMain(context);
     }).catchError((e, trace) async {
       if (_dialogContext == null) {
@@ -85,33 +76,32 @@ class _MSLoginPageState extends State<MSLoginPage>
 
       await cancelLogin();
 
-      Navigator.pop(_dialogContext);
+      Navigator.pop(_dialogContext!);
       Navigator.pop(context);
 
       print('Error during login/data fetching : ' + e.toString());
       print(trace);
 
-      showErrorDialog(
-          context,
+      showErrorDialog(context,
           title: 'Erreur',
-          content: 'Impossible de se connecter au serveur : ' + e.toString()
-      );
+          content: 'Impossible de se connecter au serveur : ' + e.toString());
     });
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     return BasePage(
       title: 'Connexion',
       fixed: true,
       child: WebView(
         javascriptMode: JavascriptMode.unrestricted,
         onWebViewCreated: _onWebViewCreated,
-        javascriptChannels: Set.from([JavascriptChannel(
-            name: "Epilyon",
-            onMessageReceived: (message) => _onChannelMessage(context, message)
-        )]),
+        javascriptChannels: Set.from([
+          JavascriptChannel(
+              name: "Epilyon",
+              onMessageReceived: (message) =>
+                  _onChannelMessage(context, message))
+        ]),
       ),
     );
   }

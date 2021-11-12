@@ -18,34 +18,34 @@
 class MCQ
 {
   DateTime date;
-  double average;
-  List<MCQGrade> grades;
+  double? average;
+  List<MCQGrade>? grades;
 
   MCQ(this.date, this.average, this.grades);
 }
 
 class MCQGrade
 {
-  String subject;
-  double grade;
+  String? subject;
+  double? grade;
 
   MCQGrade(this.subject, this.grade);
 }
 
 class NextMCQ
 {
-  bool skipped;
+  bool? skipped;
   DateTime at;
-  List<MCQRevision> revisions;
-  String lastEditor;
+  List<MCQRevision>? revisions;
+  String? lastEditor;
 
   NextMCQ(this.skipped, this.at, this.revisions, this.lastEditor);
 }
 
 class MCQRevision
 {
-  String subject;
-  List<String> work;
+  String? subject;
+  List<String>? work;
 
   MCQRevision(this.subject, this.work);
 }
