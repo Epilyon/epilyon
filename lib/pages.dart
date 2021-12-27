@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+import 'package:epilyon/pages/task/task_list.dart';
 import 'package:flutter/material.dart';
 
 import 'package:epilyon/delegates.dart';
@@ -46,7 +47,8 @@ final List<EpiPage> pages = [
             tabTitle: 'Historique',
             page: MCQHistoryPage())
       ]),
-  EpiPage(title: 'MiMos', icon: 'assets/icons/work.svg', page: MimosPage()),
+  // EpiPage(title: 'MiMos', icon: 'assets/icons/work.svg', page: MimosPage()),
+  EpiPage(title: 'Tâches', icon: 'assets/icons/work.svg', page: TaskPage()),
   EpiPage(
       title: 'Gérer',
       icon: 'assets/icons/build.svg',

@@ -27,6 +27,7 @@ import 'package:epilyon/auth.dart';
 import 'package:epilyon/delegates.dart';
 import 'package:epilyon/mimos.dart';
 import 'package:epilyon/mcq.dart';
+import 'package:epilyon/task.dart';
 
 class UserData {
   Delegate? admin;
@@ -34,14 +35,20 @@ class UserData {
   List<MCQ>? mcqHistory;
   List<Mimos>? mimos;
   NextMCQ? nextMcq;
+  List<Task>? tasks;
 
   UserData(
-      {this.admin, this.delegates, this.mcqHistory, this.mimos, this.nextMcq});
+      {this.admin,
+      this.delegates,
+      this.mcqHistory,
+      this.mimos,
+      this.nextMcq,
+      this.tasks});
 }
 
 late UserData data;
 
-DateFormat mcqDateFormat = new DateFormat('yyyy-MM-dd');
+DateFormat jsonDateFormat = new DateFormat('yyyy-MM-dd');
 DateFormat mimosDateFormat = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
 Future<void> testConnection() async {
@@ -84,7 +91,7 @@ UserData parseData(dynamic data) {
                 .reduce((a, b) => a + b)))
         .toList();
 
-    return MCQ(mcqDateFormat.parse(mcq['date']), mcq['average'], grades);
+    return MCQ(jsonDateFormat.parse(mcq['date']), mcq['average'], grades);
   }).toList();
 
   mcqs.sort((a, b) => -a.date.compareTo(b.date));
@@ -107,12 +114,32 @@ UserData parseData(dynamic data) {
         next['last_editor']);
   }
 
+  List<Task>? tasks = data['tasks']
+      .map<Task>((task) => Task(
+          jsonDateFormat.parse(task['created_at']),
+          jsonDateFormat.parse(task['updated_at']),
+          task['short_id'],
+          task['visibility'],
+          task['promotion'],
+          task['semester'],
+          task['region'],
+          task['title'],
+          task['subject'],
+          task['content'],
+          jsonDateFormat.parse(task['due_date']),
+          task['created_by_login'],
+          task['created_by'],
+          task['updated_by_login'],
+          task['updated_by']))
+      .toList();
+
   return UserData(
       admin: Delegate(data['admin']['name'], data['admin']['email']),
       delegates: delegates,
       mcqHistory: mcqs,
       mimos: mimos,
-      nextMcq: nextMcq);
+      nextMcq: nextMcq,
+      tasks: tasks);
 }
 
 Future<void> load() async {
@@ -124,6 +151,7 @@ Future<void> load() async {
   var delegates = <Delegate>[];
   var mcqs = <MCQ>[];
   var mimos = <Mimos>[];
+  var tasks = <Task>[];
   NextMCQ nextMcq;
 
   if (prefs.containsKey('admin')) {
@@ -148,6 +176,29 @@ Future<void> load() async {
           json['grades']
               .map<MCQGrade>((g) => MCQGrade(g['subject'], g['grade']))
               .toList()));
+    }
+  }
+
+  if (prefs.containsKey('tasks')) {
+    for (var task in prefs.getStringList('tasks')!) {
+      var json = jsonDecode(task);
+
+      tasks.add(Task(
+          jsonDateFormat.parse(json['created_at']),
+          jsonDateFormat.parse(json['updated_at']),
+          json['short_id'],
+          json['visibility'],
+          json['promotion'],
+          json['semester'],
+          json['region'],
+          json['title'],
+          json['subject'],
+          json['content'],
+          jsonDateFormat.parse(json['due_date']),
+          json['created_by_login'],
+          json['created_by'],
+          json['updated_by_login'],
+          json['updated_by']));
     }
   }
 
@@ -204,6 +255,28 @@ Future<void> save() async {
                     .map((grade) =>
                         {'subject': grade.subject, 'grade': grade.grade})
                     .toList()
+              }))
+          .toList());
+
+  prefs.setStringList(
+      'tasks',
+      data.tasks!
+          .map((task) => jsonEncode({
+                'created_at': jsonDateFormat.format(task.createdAt!),
+                'updated_at': jsonDateFormat.format(task.updatedAt!),
+                'short_id': task.shortId,
+                'visibility': task.visibility,
+                'promotion': task.promotion,
+                'semester': task.semester,
+                'region': task.region,
+                'title': task.title,
+                'subject': task.subject,
+                'content': task.content,
+                'due_date': jsonDateFormat.format(task.dueDate!),
+                'created_by_login': task.createdByLogin,
+                'created_by': task.createdBy,
+                'updated_by_login': task.updatedBy,
+                'updated_by': task.updatedByLogin
               }))
           .toList());
 

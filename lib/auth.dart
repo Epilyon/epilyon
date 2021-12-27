@@ -130,11 +130,11 @@ Future<void> logout() async {
 
 Future<void> loadUser() async {
   final prefs = await SharedPreferences.getInstance();
-  if (!prefs.containsKey('user')) {
+  if (!prefs.containsKey('user') || !prefs.containsKey("token")) {
     return;
   }
 
-  _token = prefs.getString("token")!;
+  _token = prefs.getString('token')!;
   setUser(jsonDecode(prefs.getString('user')!));
 }
 

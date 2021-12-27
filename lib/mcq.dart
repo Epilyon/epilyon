@@ -15,8 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-class MCQ
-{
+class MCQ {
   DateTime date;
   double? average;
   List<MCQGrade>? grades;
@@ -24,16 +23,14 @@ class MCQ
   MCQ(this.date, this.average, this.grades);
 }
 
-class MCQGrade
-{
+class MCQGrade {
   String? subject;
   double? grade;
 
   MCQGrade(this.subject, this.grade);
 }
 
-class NextMCQ
-{
+class NextMCQ {
   bool? skipped;
   DateTime at;
   List<MCQRevision>? revisions;
@@ -42,8 +39,7 @@ class NextMCQ
   NextMCQ(this.skipped, this.at, this.revisions, this.lastEditor);
 }
 
-class MCQRevision
-{
+class MCQRevision {
   String? subject;
   List<String>? work;
 
