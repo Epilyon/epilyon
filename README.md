@@ -13,8 +13,12 @@
 - [Flutter SDK](https://flutter.dev/docs/get-started/install)
 - Android Studio (for Android) or XCode (for iOS)
 - [Epilyon Server](https://github.com/epilyon/epilyon_server) ran somewhere
+- Firebase app
 
 ### Building
+
+- Add `android/app/google-services.json`
+- Add `ios/Runner/GoogleService-Info.plist`
 
 - Android : Follow [those instructions](https://flutter.dev/docs/deployment/android)
 - iOS : Follow [those ones](https://flutter.dev/docs/deployment/ios)

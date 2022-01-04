@@ -24,55 +24,46 @@ import 'package:epilyon/api_url.dart';
 import 'package:epilyon/auth.dart';
 import 'package:epilyon/data.dart';
 
-Delegate get admin => data.admin;
-List<Delegate> get delegates => data.delegates;
+Delegate? get admin => data.admin;
+List<Delegate>? get delegates => data.delegates;
 
-bool isUserAdmin()
-{
-  return data.admin.email == getUser().email;
+bool isUserAdmin() {
+  return data.admin!.email == getUser()!.email;
 }
 
-bool isUserDelegate()
-{
-  return data.delegates.any((del) => del.email == getUser().email);
+bool isUserClassRep() {
+  return data.delegates!.any((del) => del.email == getUser()!.email);
 }
 
-Future<String> addDelegate(String email) async
-{
-  var result = await http.post(API_URL + '/delegates/add', headers: {
-    'Content-Type': 'application/json',
-    'Token': getToken()
-  }, body: jsonEncode({ 'email': email }));
+Future<String?> addDelegate(String email) async {
+  var result = await http.post(Uri.parse(API_URL + '/delegates/add'),
+      headers: {'Content-Type': 'application/json', 'Token': getToken()!},
+      body: jsonEncode({'email': email}));
 
   return parseResponse(utf8.decode(result.bodyBytes))['name'];
 }
 
-Future<void> removeDelegate(String email) async
-{
-  var result = await http.post(API_URL + '/delegates/remove', headers: {
-    'Content-Type': 'application/json',
-    'Token': getToken()
-  }, body: jsonEncode({ 'email': email }));
+Future<void> removeDelegate(String? email) async {
+  var result = await http.post(Uri.parse(API_URL + '/delegates/remove'),
+      headers: {'Content-Type': 'application/json', 'Token': getToken()!},
+      body: jsonEncode({'email': email}));
 
   parseResponse(utf8.decode(result.bodyBytes));
 }
 
-Future<void> notifyAll(String text) async
-{
-  print('aaa' + getToken());
-  var result = await http.post(API_URL + '/delegates/notify', headers: {
-    'Content-Type': 'application/json',
-    'Token': getToken()
-  }, body: jsonEncode({ 'content': text }));
+Future<void> notifyAll(String text) async {
+  print('aaa' + getToken()!);
+  var result = await http.post(Uri.parse(API_URL + '/delegates/notify'),
+      headers: {'Content-Type': 'application/json', 'Token': getToken()!},
+      body: jsonEncode({'content': text}));
   print('ooo' + result.body);
 
   parseResponse(utf8.decode(result.bodyBytes));
 }
 
-class Delegate
-{
-  String name;
-  String email;
+class Delegate {
+  String? name;
+  String? email;
 
   Delegate(this.name, this.email);
 }

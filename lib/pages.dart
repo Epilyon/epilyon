@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+import 'package:epilyon/pages/task/task_list.dart';
 import 'package:flutter/material.dart';
 
 import 'package:epilyon/delegates.dart';
@@ -39,46 +40,37 @@ final List<EpiPage> pages = [
             title: 'Résultats du Q.C.M.',
             tabTitle: 'Résultats',
             icon: 'assets/icons/done_all.svg',
-            page: MCQResultPage()
-        ),
+            page: MCQResultPage()),
         EpiPage(
             title: 'Historique des Q.C.M.s',
             icon: 'assets/icons/list.svg',
             tabTitle: 'Historique',
-            page: MCQHistoryPage()
-        )
-      ]
-  ),
+            page: MCQHistoryPage())
+      ]),
+  // EpiPage(title: 'MiMos', icon: 'assets/icons/work.svg', page: MimosPage()),
+  EpiPage(title: 'Tâches', icon: 'assets/icons/work.svg', page: TaskPage()),
   EpiPage(
-    title: 'MiMos',
-    icon: 'assets/icons/work.svg',
-    page: MimosPage()
-  ),
-  EpiPage(
-    title: 'Gérer',
-    icon: 'assets/icons/build.svg',
-    onlyIf: () => isUserAdmin() || isUserDelegate() || false,
-    tabIndex: 0,
-    tabs: [
-      EpiPage(
-        title: 'Gestion générale',
-        tabTitle: 'Général',
-        icon: 'assets/icons/build.svg',
-        page: ManagePage()
-      ),
-      EpiPage(
-        title: 'Gestion des MiMos',
-        tabTitle: 'MiMos',
-        icon: 'assets/icons/work.svg',
-        page: MimosPage(canAdd: true, canRemove: true)
-      ),
-      EpiPage(
-        title: 'Gestion des Q.C.M.s',
-        tabTitle: 'Q.C.M.s',
-        icon: 'assets/icons/check_box.svg'
-      )
-    ]
-  ),
+      title: 'Gérer',
+      icon: 'assets/icons/build.svg',
+      onlyIf: () => isUserAdmin() || isUserClassRep() || false,
+      tabIndex: 0,
+      tabs: [
+        EpiPage(
+            title: 'Gestion générale',
+            tabTitle: 'Général',
+            icon: 'assets/icons/build.svg',
+            page: ManagePage()),
+        EpiPage(
+            title: 'Gestion des MiMos',
+            tabTitle: 'MiMos',
+            icon: 'assets/icons/work.svg',
+            page: MimosPage(canAdd: true, canRemove: true)),
+        // EpiPage(
+        //   title: 'Gestion des Q.C.M.s',
+        //   tabTitle: 'Q.C.M.s',
+        //   icon: 'assets/icons/check_box.svg'
+        // )
+      ]),
   EpiPage(
     title: 'Paramètres',
     icon: 'assets/icons/settings.svg',
@@ -87,36 +79,28 @@ final List<EpiPage> pages = [
   EpiPage(
       title: 'Se déconnecter',
       icon: 'assets/icons/first_page.svg',
-      action: 'logout'
-  ),
-  EpiPage(
-      title: 'À Propos',
-      icon: 'assets/icons/info.svg',
-      page: AboutPage()
-  ),
+      action: 'logout'),
+  EpiPage(title: 'À Propos', icon: 'assets/icons/info.svg', page: AboutPage()),
 ];
 
-class EpiPage
-{
+class EpiPage {
   String title;
-  String tabTitle;
+  String? tabTitle;
   String icon;
-  Widget page;
+  Widget? page;
   List<EpiPage> tabs;
-  String action;
+  String? action;
   int tabIndex;
 
-  bool Function() onlyIf;
+  bool Function()? onlyIf;
 
-  EpiPage({
-    @required this.title,
-    this.tabTitle,
-    @required this.icon,
-    this.page,
-    this.tabs = const [],
-    this.action,
-    this.tabIndex = 0,
-
-    this.onlyIf
-  });
+  EpiPage(
+      {required this.title,
+      this.tabTitle,
+      required this.icon,
+      this.page,
+      this.tabs = const [],
+      this.action,
+      this.tabIndex = 0,
+      this.onlyIf});
 }

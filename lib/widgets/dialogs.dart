@@ -19,34 +19,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 void showLoadingDialog(BuildContext context, {
-  String title,
-  String content,
-  Function(BuildContext context) onContextUpdate
+  String? title,
+  String? content,
+  Function(BuildContext? context)? onContextUpdate
 })
 {
   showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        onContextUpdate(context);
+        onContextUpdate!(context);
 
         return LoadingDialog(
-          title: Text(title),
-          content: Text(content),
+          title: Text(title!),
+          content: Text(content!),
         );
       }
   ).whenComplete(() {
-    onContextUpdate(null);
+    onContextUpdate!(null);
   });
 }
 
-void showErrorDialog(BuildContext context, { String title, String content })
+void showErrorDialog(BuildContext context, { String? title, String? content })
 {
   showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: Text(title),
-        content: Text(content),
+        title: Text(title!),
+        content: Text(content!),
         actions: <Widget>[
           FlatButton(
             child: Text("OK :("),
@@ -60,17 +60,17 @@ void showErrorDialog(BuildContext context, { String title, String content })
 }
 
 void showConfirmDialog(BuildContext context, {
-  String title,
-  String content,
-  void Function() onConfirm,
+  String? title,
+  String? content,
+  void Function()? onConfirm,
   String okText = 'Oui',
   String cancelText = 'Annuler'
 }) {
   showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: Text(title),
-        content: Text(content),
+        title: Text(title!),
+        content: Text(content!),
         actions: <Widget>[
           FlatButton(
             child: Text(cancelText),
@@ -82,7 +82,7 @@ void showConfirmDialog(BuildContext context, {
             child: Text(okText),
             onPressed: () {
               Navigator.of(context).pop();
-              onConfirm();
+              onConfirm!();
             },
           )
         ],
@@ -91,10 +91,10 @@ void showConfirmDialog(BuildContext context, {
 }
 
 void showInputDialog(BuildContext context, {
-  String title,
-  String content,
-  void Function(BuildContext, String) onConfirm,
-  String okText,
+  String? title,
+  String? content,
+  void Function(BuildContext, String)? onConfirm,
+  String? okText,
   String cancelText = 'Annuler',
   bool email = false
 }) {
@@ -104,12 +104,12 @@ void showInputDialog(BuildContext context, {
   showDialog(
     context: context,
     builder: (BuildContext context) => AlertDialog(
-      title: Text(title),
+      title: Text(title!),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Text(content),
+          Text(content!),
           TextField(
             keyboardType: email ? TextInputType.emailAddress : TextInputType.text,
             autofocus: true,
@@ -130,9 +130,9 @@ void showInputDialog(BuildContext context, {
           },
         ),
         FlatButton(
-          child: Text(okText),
+          child: Text(okText!),
           onPressed: () {
-            onConfirm(context, controller.text);
+            onConfirm!(context, controller.text);
           },
         )
       ],
@@ -143,8 +143,8 @@ void showInputDialog(BuildContext context, {
 class LoadingDialog extends SimpleDialog
 {
   LoadingDialog({
-    Widget title,
-    Widget content
+    Widget? title,
+    Widget? content
   }) : super(
       title: title,
       children: <Widget>[

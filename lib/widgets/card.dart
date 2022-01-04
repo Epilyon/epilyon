@@ -26,8 +26,8 @@ class EpiCard extends StatelessWidget
   final double bottomPadding;
 
   EpiCard({
-    @required this.title,
-    @required this.child,
+    required this.title,
+    required this.child,
 
     this.fullSize = true,
     this.bottomPadding = 12.5

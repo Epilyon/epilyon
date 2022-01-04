@@ -24,43 +24,35 @@ import 'package:epilyon/api_url.dart';
 import 'package:epilyon/auth.dart';
 import 'package:epilyon/data.dart';
 
-List<Mimos> get mimos => data.mimos;
+List<Mimos>? get mimos => data.mimos;
 
-Future<void> addMimos(Mimos mimos) async
-{
-  print(mimosDateFormat.format(mimos.date));
-  var result = await http.post(API_URL + '/mimos/add', headers: {
-    'Content-Type': 'application/json',
-    'Token': getToken()
-  }, body: jsonEncode({
-    'subject': mimos.subject,
-    'number': mimos.number,
-    'title': mimos.title,
-    'date': mimosDateFormat.format(mimos.date)
-  }));
+Future<void> addMimos(Mimos mimos) async {
+  print(mimosDateFormat.format(mimos.date!));
+  var result = await http.post(Uri.parse(API_URL + '/mimos/add'),
+      headers: {'Content-Type': 'application/json', 'Token': getToken()!},
+      body: jsonEncode({
+        'subject': mimos.subject,
+        'number': mimos.number,
+        'title': mimos.title,
+        'date': mimosDateFormat.format(mimos.date!)
+      }));
 
   parseResponse(utf8.decode(result.bodyBytes));
 }
 
-Future<void> removeMimos(String subject, int number) async
-{
-  var result = await http.post(API_URL + '/mimos/remove', headers: {
-    'Content-Type': 'application/json',
-    'Token': getToken()
-  }, body: jsonEncode({
-    'subject': subject,
-    'number': number
-  }));
+Future<void> removeMimos(String? subject, int? number) async {
+  var result = await http.post(Uri.parse(API_URL + '/mimos/remove'),
+      headers: {'Content-Type': 'application/json', 'Token': getToken()!},
+      body: jsonEncode({'subject': subject, 'number': number}));
 
   parseResponse(utf8.decode(result.bodyBytes));
 }
 
-class Mimos
-{
-  String subject;
-  int number;
-  String title;
-  DateTime date;
+class Mimos {
+  String? subject;
+  int? number;
+  String? title;
+  DateTime? date;
 
   Mimos(this.subject, this.number, this.title, this.date);
 }

@@ -21,16 +21,16 @@ import 'package:flutter_svg/svg.dart';
 class EpiDropdown extends StatefulWidget
 {
   final List<String> values;
-  final void Function(String) onChanged;
+  final void Function(String?) onChanged;
 
-  EpiDropdown({ @required this.values, @required this.onChanged });
+  EpiDropdown({ required this.values, required this.onChanged });
 
   _EpiDropdownState createState() => _EpiDropdownState();
 }
 
 class _EpiDropdownState extends State<EpiDropdown>
 {
-  String value;
+  String? value;
 
   @override
   Widget build(BuildContext context)
@@ -64,7 +64,7 @@ class _EpiDropdownState extends State<EpiDropdown>
               child: Text(value),
             );
           }).toList(),
-          onChanged: (value) {
+          onChanged: (dynamic value) {
             setState(() => this.value = value);
             widget.onChanged(value);
           },

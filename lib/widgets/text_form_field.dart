@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 
 class EpiTextFormField extends StatelessWidget
 {
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final bool number;
   final bool readonly;
-  final void Function() callback;
-  final void Function() onTap;
+  final void Function()? callback;
+  final void Function()? onTap;
 
   EpiTextFormField({
     this.controller,
@@ -31,7 +31,7 @@ class EpiTextFormField extends StatelessWidget
       })] : [],
       onFieldSubmitted: (_) {
         if (callback != null){
-          callback();
+          callback!();
         }
       },
       onTap: onTap,
@@ -59,9 +59,9 @@ class EpiTextFormField extends StatelessWidget
     );
   }
 
-  String emptyValidator(String value)
+  String? emptyValidator(String? value)
   {
-    if (value.isEmpty) {
+    if (value!.isEmpty) {
       return 'Ce champ ne peut pas être vide';
     }
 

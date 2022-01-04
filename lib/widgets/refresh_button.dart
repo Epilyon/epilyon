@@ -36,8 +36,8 @@ class RefreshButton extends StatefulWidget
 
 class _RefreshButtonState extends State<RefreshButton> with SingleTickerProviderStateMixin
 {
-  AnimationController _animationController;
-  Animation<double> _animation;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
 
   var _refreshing = false;
 

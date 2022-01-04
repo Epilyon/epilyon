@@ -30,7 +30,7 @@ class MimosPage extends StatefulWidget
   final bool canAdd;
   final bool canRemove;
 
-  MimosPage({ this.canAdd = false, this.canRemove = false, Key key }) : super(key: key);
+  MimosPage({ this.canAdd = false, this.canRemove = false, Key? key }) : super(key: key);
 
   @override
   _MimosPageState createState() => _MimosPageState();
@@ -59,7 +59,7 @@ class _MimosPageState extends State<MimosPage>
 
   void doAddMimos(Mimos m) {
     addMimos(m).then((_) => setState(() {
-      mimos.add(m);
+      mimos!.add(m);
     })).catchError((err) {
       if (!(err is String)) {
         print('Error while adding mimos');
@@ -76,7 +76,7 @@ class _MimosPageState extends State<MimosPage>
   void doRemoveMimos(Mimos m)
   {
     removeMimos(m.subject, m.number).then((_) => setState(() {
-      mimos.removeWhere((mm) => mm.number == m.number && mm.subject == m.subject);
+      mimos!.removeWhere((mm) => mm.number == m.number && mm.subject == m.subject);
     })).catchError((err) {
       if (!(err is String)) {
         print('Error while removing mimos');
@@ -93,11 +93,11 @@ class _MimosPageState extends State<MimosPage>
   @override
   Widget build(BuildContext context)
   {
-    var weeks = Map<String, Map<String, List<Mimos>>>();
+    var weeks = Map<String, Map<String?, List<Mimos>>>();
 
-    for (var m in mimos) {
-      var week = new DateTime(m.date.year, m.date.month, m.date.day);
-      week = week.subtract(new Duration(days: m.date.weekday - 1));
+    for (var m in mimos!) {
+      var week = new DateTime(m.date!.year, m.date!.month, m.date!.day);
+      week = week.subtract(new Duration(days: m.date!.weekday - 1));
 
       var weekStr = (week.day < 10 ? '0' : '')
           + week.day.toString()
@@ -106,17 +106,17 @@ class _MimosPageState extends State<MimosPage>
           + week.month.toString();
 
       if (!weeks.containsKey(weekStr)) {
-        weeks[weekStr] = Map<String, List<Mimos>>();
+        weeks[weekStr] = Map<String?, List<Mimos>>();
         for (var sub in ['Algo', 'Maths', 'Physique', 'Élec']) {
-          weeks[weekStr][sub] = <Mimos>[];
+          weeks[weekStr]![sub] = <Mimos>[];
         }
       }
 
-      if (!weeks[weekStr].containsKey(m.subject)) {
-        weeks[weekStr][m.subject] = <Mimos>[];
+      if (!weeks[weekStr]!.containsKey(m.subject)) {
+        weeks[weekStr]![m.subject] = <Mimos>[];
       }
 
-      weeks[weekStr][m.subject].add(m);
+      weeks[weekStr]![m.subject]!.add(m);
     }
 
     var cards = <Widget>[];
@@ -124,7 +124,7 @@ class _MimosPageState extends State<MimosPage>
       var rows = <TableRow>[];
 
       subjects.forEach((subject, mimos) {
-        mimos.sort((a, b) => a.number.compareTo(b.number));
+        mimos.sort((a, b) => a.number!.compareTo(b.number!));
 
         for (int i = 0; i < mimos.length; i++) {
           rows.add(TableRow(
@@ -132,7 +132,7 @@ class _MimosPageState extends State<MimosPage>
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 5.0),
                   child: Text(
-                    i == 0 ? subject : '',
+                    i == 0 ? subject! : '',
                     style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 19.0
@@ -154,7 +154,7 @@ class _MimosPageState extends State<MimosPage>
                     ),
                     Flexible(
                       child: TextOneLine(
-                        mimos[i].title,
+                        mimos[i].title!,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                             fontStyle: FontStyle.italic,
